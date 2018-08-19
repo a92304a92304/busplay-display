@@ -29,6 +29,7 @@ const stop = () => {
 }
 
 const getNearest = (current, route) => {
+  
 
 }
 

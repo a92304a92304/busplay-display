@@ -79,7 +79,6 @@ export default {
         if(this.marquee) this.offset = -this.$refs.box.getBoundingClientRect().width
         this.startTimer = setTimeout(this.scrolling, this.startDelay * 1000)
       }
-
     },
     // 滾動中
     scrolling () {
@@ -100,9 +99,11 @@ export default {
     },
     // 根據長度計算offset
     calcOffset () {
+      if(!(this.$refs.box && this.$refs.content)) return 0
+
       const boxWidth = this.$refs.box.getBoundingClientRect().width
       const textWidth = this.$refs.content.getBoundingClientRect().width
-      let offset = textWidth - boxWidth
+      const offset = textWidth - boxWidth
       return offset
     },
     // 重設文字滾動器，文字歸位並從頭開始

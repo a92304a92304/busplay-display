@@ -5,12 +5,12 @@
     template(v-if='data')
       .bus-info
         .bus-name
-          h2(:style='busNameStyle') {{ data.busName }}
+          h2(:style='busNameStyle') {{ data.routeName }}
         .destination
           ScrollText(ref='destination')
-            span.from {{ data.destination.from.ch }}
+            span.from {{ data.departureName.ch }}
             fa(icon='angle-right' style={margin: `0 .5rem`})
-            span.to {{ data.destination.to.ch }}
+            span.to {{ data.destinationName.ch }}
         .clock
           .item.weather(v-if='clock.weather')
             img.icon(:src='getWeatherIcon(clock.weather.desc)')
@@ -37,8 +37,10 @@
           span.text(:style='fontColorStyle') 分
         ul.stations
           li(v-for='i in 7' :class='{passed: i == 1}')
-            .name(:class='{latin: test}')
+            .name(:class='{latin: test}' v-if='test')
               span {{ data.nextStop_en[i-1] }}
+            .name(v-else)
+              span {{ data.stations[i - 1].ch }}
             .time
               span.text {{ i * 2 }}
               span.arrow(v-if='i==1' :class='{active: 1}')
@@ -73,8 +75,9 @@ export default {
       destinationBoxOffset: 0,
       transitions: ['flipDown', 'scrollDown', 'fade', ''],
       transition: 0,
+      mainStationTimer: null,
       lipsum: null,
-      test: true,
+      test: 0,
     }
   },
   props:{
@@ -96,11 +99,9 @@ export default {
   },
   mounted () {
     const vm = this
-    const timer = setInterval(() => {
-      vm.toggleMainStationLang()
-    }, 3000)
 
     vm.setStyle()
+    vm.resetMainStationLang()
 
     $(window).resize(() => {
       vm.setStyle()
@@ -157,7 +158,15 @@ export default {
 
       if($routeTime.position())
         vm.routeBarTop = $routeTime.position().top - ($routeBar.height() - $routeTime.height()) / 2
+    },
+    resetMainStationLang () {
+      const vm = this
 
+      clearInterval(this.mainStationTimer)
+      this.lang = 0
+      this.mainStationTimer = setInterval(() => {
+        vm.toggleMainStationLang()
+      }, 3000)
     }
   },
   computed: {
@@ -198,7 +207,8 @@ export default {
   },
   watch: {
     data () {
-      this.$refs.destination.reset()
+      if(this.$refs.destination) this.$refs.destination.reset()
+      this.resetMainStationLang()
     }
   },
   updated () {
