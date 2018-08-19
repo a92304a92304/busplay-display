@@ -53,9 +53,6 @@ export default {
     vm.fetchWeather()
     vm.fetchRoute(`5b72fa10d139155080c9b860`)
 
-    gps.start((result) => {
-      vm.locationImg = result.img
-    })
   },
   methods: {
     // 設定當前時間
@@ -66,6 +63,19 @@ export default {
       this.clock.time = (s % 2 == 0) ? `${h}:${m}` : `${h} ${m}`
 
       setTimeout(this.setTime, 1000)
+    },
+    setGps () {
+      const vm = this
+      gps.start((result) => {
+        vm.locationImg = result.img
+        const current = [result.crd.latitude, result.crd.longitude]
+        const stationsForCalc = []
+        vm.route.stations.forEach((val) => {
+          stationsForCalc.push([parseFloat(val.location.lat), parseFloat(val.location.lng)])
+        })
+        vm.current = gps.getNearest(current, stationsForCalc)
+        vm.setData()
+      })
     },
     setData () {
       if(!this.route) return
@@ -101,6 +111,7 @@ export default {
         success (data) {
           vm.route = data[0]
           vm.setData()
+          vm.setGps()
         }
       })
     },
@@ -123,7 +134,7 @@ export default {
   watch: {
     current () {
       this.setData()
-      console.log(this.current);
+
     },
   },
   mixins: [display]
