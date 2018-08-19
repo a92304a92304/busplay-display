@@ -1,0 +1,76 @@
+// 關於vue transiion
+// https://vuefe.cn/v2/guide/transitions.html
+
+/*
+ * Filp Down動畫
+ */
+=flipDown-transition
+  transition: all .8s
+
+.flipDown-enter
+  transform-origin: top
+  transform: scaleY(0)
+  opacity: 0
+
+.flipDown-leave
+  transform-origin: bottom
+  transform: scaleY(1)
+  opacity: 1
+
+.flipDown-leave-to
+  +flipDown-transition
+  transform-origin: bottom
+  transform: scaleY(0)
+  opacity: 0
+
+.flipDown-enter-to
+  +flipDown-transition
+  transform-origin: top
+  transform: scaleY(1)
+  opacity: 1
+
+
+/*
+ * Scroll Down動畫
+ */
+
+=scrollDown-transition
+  transition: all .8s ease
+
+.scrollDown-enter
+  transform-origin: top
+  transform: translateY(100%)
+
+.scrollDown-leave
+  transform: translateY(0)
+  opacity: 1
+
+.scrollDown-leave-to
+  +scrollDown-transition
+  transform: translateY(-100%)
+  opacity: 0
+
+.scrollDown-enter-to
+  +scrollDown-transition
+  transform: translateY(0%)
+  opacity: 1
+
+/*
+ * Fade動畫
+ */
+=fade-transition
+  transition: all .5s
+
+.fade-enter
+  opacity: 0
+
+.fade-leave
+  opacity: 1
+
+.fade-leave-to
+  +fade-transition
+  opacity: 0
+
+.fade-enter-to
+  +fade-transition
+  opacity: 1

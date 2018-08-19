@@ -1,0 +1,265 @@
+// BS
+@import "~bootstrap/scss/functions"
+@import "~bootstrap/scss/variables"
+@import "~bootstrap/scss/mixins"
+
+// 自訂函數
+@import "../function"
+
+$top-bg-color: #f2f2f2
+$fonts: "PingFang TC" ,"文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", Arial
+
+@keyframes arrow-animation
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+=item-style
+  background-color: rgba(black, .05)
+  border-radius: .5rem
+  padding: .1rem .75rem
+
+=box-shadow
+  box-shadow: 0 0rem 1rem rgba(0, 0, 0, .2)
+
+h1, h2, h3, h4, h5, h6, span
+  display: inline-block
+  font-family: $fonts
+  margin: 0
+
+#tokyo-metro
+  user-select: none
+  position: relative
+  overflow: hidden
+  height: 100%
+  #top
+    display: flex
+    flex-wrap: wrap
+    align-items: center
+    overflow: hidden
+    color: #1e1e1e
+    background-color: $top-bg-color
+    border-bottom: .5rem solid #1e1e1e
+    +box-shadow
+    height: 35%
+  #bottom
+    height: 65%
+
+.bus-info
+  white-space: nowrap
+  display: flex
+  align-items: center
+  width: 100%
+  +px(1rem)
+  padding-top: 1rem
+  .bus-name
+    display: inline-block
+    h2
+      border-radius: 1rem
+      border: .2rem solid #1e1e1e
+      font-size: 2rem
+      font-weight: bold
+      +px(.5rem)
+  .destination
+    position: relative
+    flex-grow: 1  // 寬度佔滿剩餘空間
+    overflow: hidden
+    display: inline-block
+    font-weight: bold
+    font-size: 1.5rem
+    color: $gray-700
+    +mx(1rem)
+
+  .clock
+    font-size: 1.25rem
+    font-weight: bold
+    display: flex
+    flex-direction: row
+    align-items: center
+    .item
+      +mx(.25rem)
+      +item-style
+    .time
+      font-family: Courier, 'Lucida Console', Monaco
+    .weather
+      display: flex
+      flex-direction: row
+      align-items: center
+      span.icon
+        margin-right: .25rem
+      img.icon
+        margin-right: .25rem
+        display: inline-block
+        height: 1.5rem
+        width: auto
+      span.text
+
+$main-station-font-size: 3.5rem
+.main-station
+  width: 75%
+  +px(1rem)
+  +py(.5rem)
+  .box
+    position: relative
+    width: 100%
+    overflow: hidden
+    height: calc(#{$main-station-font-size} + 20px)
+  h1
+    font-size: $main-station-font-size
+    font-weight: 900
+    position: absolute
+    left: 0
+    top: 0
+    white-space: nowrap
+    display: flex
+    span
+      transform-origin: left
+      display: inline-block
+
+.ticket-info
+  flex-grow: 1
+  width: auto
+  font-size: 1.25rem
+  font-weight: bold
+  text-align: center
+  span
+    // +item-style
+
+.route
+  height: 100%
+  position: relative
+  ul.stations
+    height: 100%
+    display: flex
+    align-items: flex-end
+    justify-content: space-evenly
+    margin: 0
+    +px(3rem)
+    padding-left: 1.5rem
+    li
+      position: relative
+      height: 100%
+      z-index: 10
+      flex-grow: 1
+      flex: 1
+      &.passed
+        .name, .time .text
+          opacity: .5
+
+      // 預設亞洲字樣式(直書)
+      .name
+        height: 60%
+        font-size: 1.2rem
+        font-weight: bold
+        text-align: right
+        writing-mode: vertical-rl
+        +py(.5rem)
+        +mx(auto)
+      // 拉丁字母樣式(橫書傾斜顯示)
+      .name.latin
+        position: relative
+        text-align: left
+        font-size: 1rem
+        line-height: 1.2rem
+        +my(auto)
+        span
+          position: absolute
+          left: 0
+          bottom: 0
+          writing-mode: horizontal-tb
+          width: 10rem
+          transform-origin: left
+          transform: rotate(-50deg)
+      .time
+        font-size: 1.5rem
+        font-weight: bold
+        text-align: center
+        height: 2rem
+        position: relative
+        span.text
+          background-color: rgba(white, .7)
+          border-radius: .3rem
+          height: 2rem
+          +px(.5rem)
+        .arrow
+          position: absolute
+          right: -.5rem
+          height: 100%
+          min-width: 1rem
+          &.active
+            animation-name: arrow-animation
+            animation-duration: .5s
+            animation-iteration-count: infinite
+            animation-direction: alternate
+          .shape-arrow-left
+            position: relative
+            height: 100%
+            &::before, &::after
+              content: ''
+              position: absolute
+              top: 0
+              right: 0
+              height: 50%
+              width: 1rem
+              background: white
+              transform: skew(45deg, 0deg)
+            &::after
+              bottom: 0
+              top: auto
+              background: $gray-200
+              transform: skew(-45deg, 0deg)
+      .info
+        +my(.5rem)
+        position: relative
+        height: 20%
+        ul
+          position: absolute
+          width: 100%
+          top: 0
+          left: 0
+          li
+            +px(.25rem)
+            word-break: break-all
+            font-size: .8rem
+            line-height: 1rem
+
+  .bar
+    position: absolute
+    background-color: #1e1e1e
+    width: 97%
+    height: 2.5rem
+    +box-shadow
+    span.text
+      position: absolute
+      color: white
+      right: 0rem
+      bottom: 0
+      font-weight: bold
+    .arrow
+      position: absolute
+      height: 100%
+      right: -1rem
+      border-style: solid
+      border-width: 1.2rem 0 1.2rem 1rem
+      border-color: transparent transparent transparent #1e1e1e
+
+.marquee
+  z-index: 1000
+  position: absolute
+  bottom: 0
+  left: 0
+  width: 100%
+  height: 1.5rem
+  background-color: #1e1e1e
+  color: $light
+
+.logo-banner
+  display: flex
+  align-items: center
+  justify-content: center
+  height: 100%
+  img.logo
+    opacity: .05
+    height: 30%
+    width: auto

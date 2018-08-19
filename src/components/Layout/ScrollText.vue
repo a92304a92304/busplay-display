@@ -1,0 +1,196 @@
+<!--
+# 文字滾動器
+
+## 用法(pug)
+```
+ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
+  div Your Element Here
+```
+
+## 參數
+- px-per-sec: 每秒滾動多少px
+- start-delay: 開始滾動前等待的秒數
+- end-delay: 結束滾動後等待的秒數
+- text-style: 內容字體樣式
+-->
+<template lang="pug">
+.box(ref='box' @click='Reset()')
+  .gradient-left(:class='{scrolling: (state == 1 || state == 2)}' :style='GetGradientStyle()')
+  .gradient-right(:class='{scrolling: (state == 0 || state == 1)}' :style='GetGradientStyle(`right`)')
+  .content(ref='content' :style='contentStyle')
+    span(:style='textStyle')
+      slot
+</template>
+
+<script>
+import _ from 'lodash'
+
+export default {
+  name: 'ScrollText',
+  data () {
+    return {
+      innerText: null,
+      offset: 0,
+      state: 0,    // 0: 滾動前, 1: 滾動中, 2: 結束滾動, 3: 不滾動
+      startTimer: null,
+      scrollingTimer: null,
+      endTimer: null,
+    }
+  },
+  props:{
+    pxPerSec: {
+      type: Number,
+      default: 100,
+    },
+    startDelay: {
+      type: Number,
+      default: 1,
+    },
+    endDelay: {
+      type: Number,
+      default: 1,
+    },
+    backgroundColor: {
+      type: String,
+      default: '#f2f2f2',
+    },
+    textStyle: {
+      type: Object,
+      default: () => { return {} }
+    },
+    marquee: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted () {
+    this.Start()
+  },
+  methods: {
+    // 準備開始滾動
+    Start () {
+      const offset = this.CalcOffset()
+      this.offset = 0
+      this.state = 0
+
+      if(this.CalcOffset() <= 0){
+        this.state = 3  // 若字數未超過則不播放滾動動畫
+      } else{
+        if(this.marquee) this.offset = -this.$refs.box.getBoundingClientRect().width
+        this.startTimer = setTimeout(this.Scrolling, this.startDelay * 1000)
+      }
+
+    },
+    // 滾動中
+    Scrolling () {
+      const boxWidth = this.$refs.box.getBoundingClientRect().width
+      const offset = this.CalcOffset()
+      this.state = 1
+      this.offset = (offset > 0) ? offset : 0
+
+      if(this.marquee) this.offset = offset + boxWidth
+
+      const duration = this.offset / this.pxPerSec  // 動畫持續的秒數
+      this.scrollingTimer = setTimeout(this.End, duration * 1000)
+    },
+    // 滾動完後等待
+    End () {
+      this.state = 2
+      this.endTimer = setTimeout(this.Start, this.endDelay * 1000)
+    },
+    // 根據長度計算offset
+    CalcOffset () {
+      const boxWidth = this.$refs.box.getBoundingClientRect().width
+      const textWidth = this.$refs.content.getBoundingClientRect().width
+      let offset = textWidth - boxWidth
+      return offset
+    },
+    // 重設文字滾動器，文字歸位並從頭開始
+    Reset () {
+      this.offset = 0
+      this.state = 0
+      clearInterval(this.startTimer)
+      clearInterval(this.scrollingTimer)
+      clearInterval(this.endTimer)
+      this.Start()
+    },
+    HexToRgb (hex) {
+      let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
+      hex = hex.replace(shorthandRegex, (m, r, g, b) => {
+        return r + r + g + g + b + b
+      })
+      let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      } : null
+    },
+    // 取得漸層style
+    GetGradientStyle (direction = 'left') {
+      const HexToRgb = this.HexToRgb
+      const color = this.backgroundColor
+      const colorRGB = `${HexToRgb(color).r}, ${HexToRgb(color).g}, ${HexToRgb(color).b}`
+
+      return {
+        background: `linear-gradient(to ${direction}, rgba(${colorRGB}, 0), rgba(${colorRGB}, 1) 100%)`,
+      }
+    }
+  },
+  computed: {
+    contentStyle () {
+      const duration = this.offset / this.pxPerSec  // 動畫持續的秒數
+      const distance = -this.offset
+
+      return {
+        transition: `transform ${duration}s linear`,
+        transform: `translateX(${distance}px)`,
+      }
+    },
+  },
+  watch: {
+    innerText () {
+      this.Reset()
+    }
+  },
+  updated () {
+    try{
+      this.innerText = (this.$refs.content.outerText)
+    }
+    catch(e){
+      this.innerText = ''
+    }
+  }
+}
+</script>
+
+<style scoped lang="sass">
+.box
+  position: relative
+  width: 100%
+  overflow: hidden
+
+.content
+  display: inline-block
+  white-space: nowrap
+  transition: transform 2s
+
+.gradient-left, .gradient-right
+  position: absolute
+  bottom: 0
+  width: 1rem
+  height: 100%
+  z-index: 9999
+  transition: opacity .3s
+  opacity: 0
+  &.scrolling
+    opacity: 1
+
+.gradient-left
+  left: 0
+  background: linear-gradient(to left, rgba(#f2f2f2, 0), rgba(#f2f2f2, 1) 100%)
+.gradient-right
+  right: 0
+  background: linear-gradient(to right, rgba(#f2f2f2, 0), rgba(#f2f2f2, 1) 100%)
+
+</style>
