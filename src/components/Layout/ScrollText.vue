@@ -14,9 +14,9 @@ ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
 - text-style: 內容字體樣式
 -->
 <template lang="pug">
-.box(ref='box' @click='Reset()')
-  .gradient-left(:class='{scrolling: (state == 1 || state == 2)}' :style='GetGradientStyle()')
-  .gradient-right(:class='{scrolling: (state == 0 || state == 1)}' :style='GetGradientStyle(`right`)')
+.box(ref='box' @click='reset()')
+  .gradient-left(:class='{scrolling: (state == 1 || state == 2)}' :style='getGradientStyle()')
+  .gradient-right(:class='{scrolling: (state == 0 || state == 1)}' :style='getGradientStyle(`right`)')
   .content(ref='content' :style='contentStyle')
     span(:style='textStyle')
       slot
@@ -64,57 +64,57 @@ export default {
     }
   },
   mounted () {
-    this.Start()
+    this.start()
   },
   methods: {
     // 準備開始滾動
-    Start () {
-      const offset = this.CalcOffset()
+    start () {
+      const offset = this.calcOffset()
       this.offset = 0
       this.state = 0
 
-      if(this.CalcOffset() <= 0){
+      if(this.calcOffset() <= 0){
         this.state = 3  // 若字數未超過則不播放滾動動畫
       } else{
         if(this.marquee) this.offset = -this.$refs.box.getBoundingClientRect().width
-        this.startTimer = setTimeout(this.Scrolling, this.startDelay * 1000)
+        this.startTimer = setTimeout(this.scrolling, this.startDelay * 1000)
       }
 
     },
     // 滾動中
-    Scrolling () {
+    scrolling () {
       const boxWidth = this.$refs.box.getBoundingClientRect().width
-      const offset = this.CalcOffset()
+      const offset = this.calcOffset()
       this.state = 1
       this.offset = (offset > 0) ? offset : 0
 
       if(this.marquee) this.offset = offset + boxWidth
 
       const duration = this.offset / this.pxPerSec  // 動畫持續的秒數
-      this.scrollingTimer = setTimeout(this.End, duration * 1000)
+      this.scrollingTimer = setTimeout(this.end, duration * 1000)
     },
     // 滾動完後等待
-    End () {
+    end () {
       this.state = 2
-      this.endTimer = setTimeout(this.Start, this.endDelay * 1000)
+      this.endTimer = setTimeout(this.start, this.endDelay * 1000)
     },
     // 根據長度計算offset
-    CalcOffset () {
+    calcOffset () {
       const boxWidth = this.$refs.box.getBoundingClientRect().width
       const textWidth = this.$refs.content.getBoundingClientRect().width
       let offset = textWidth - boxWidth
       return offset
     },
     // 重設文字滾動器，文字歸位並從頭開始
-    Reset () {
+    reset () {
       this.offset = 0
       this.state = 0
       clearInterval(this.startTimer)
       clearInterval(this.scrollingTimer)
       clearInterval(this.endTimer)
-      this.Start()
+      this.start()
     },
-    HexToRgb (hex) {
+    hexToRgb (hex) {
       let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
       hex = hex.replace(shorthandRegex, (m, r, g, b) => {
         return r + r + g + g + b + b
@@ -127,10 +127,10 @@ export default {
       } : null
     },
     // 取得漸層style
-    GetGradientStyle (direction = 'left') {
-      const HexToRgb = this.HexToRgb
+    getGradientStyle (direction = 'left') {
+      const hexToRgb = this.hexToRgb
       const color = this.backgroundColor
-      const colorRGB = `${HexToRgb(color).r}, ${HexToRgb(color).g}, ${HexToRgb(color).b}`
+      const colorRGB = `${hexToRgb(color).r}, ${hexToRgb(color).g}, ${hexToRgb(color).b}`
 
       return {
         background: `linear-gradient(to ${direction}, rgba(${colorRGB}, 0), rgba(${colorRGB}, 1) 100%)`,
@@ -150,7 +150,7 @@ export default {
   },
   watch: {
     innerText () {
-      this.Reset()
+      this.reset()
     }
   },
   updated () {

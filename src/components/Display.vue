@@ -2,6 +2,8 @@
 main
   #display-area(:style='areaStyle')
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :clock='clock')
+  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000})
+    img.img-fluid(:src='locationImg')
   .alert.alert-info.debug-box
     h6.alert-heading.my-0(@click='debugMode=!debugMode') Debug Panel
     div(v-if='debugMode')
@@ -25,6 +27,8 @@ import screenfull from 'screenfull'
 import firebase from 'firebase/app'
 import TokyoMetro from '@/components/Layout/TokyoMetro'
 import ScrollText from '@/components/Layout/ScrollText'
+import gps from '@/assets/js/gps'
+
 
 // 雙向綁定參考 https://div.io/topic/1880
 
@@ -39,6 +43,7 @@ export default {
       ratio: [16, 9],      // 顯示比例
       htmlFontSize: 16,    // 整體字級
       debugMode: true,     // 是否顯示debug panel
+      locationImg: null,
       clock: {
         time: '00:00',
         weather: null,
@@ -76,7 +81,9 @@ export default {
     vm.setWindow()
     vm.setTime()
     vm.fetchWeather()
-
+    gps.start((result) => {
+      vm.locationImg = result.img
+    })
   },
   methods: {
     // 設定視窗寬高

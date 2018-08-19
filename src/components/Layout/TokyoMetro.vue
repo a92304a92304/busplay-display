@@ -9,7 +9,7 @@
         .destination
           ScrollText(ref='destination')
             span.from {{ data.destination.from.ch }}
-            i.fas.fa-angle-right(style={margin: `0 .5rem`} )
+            fa(icon='angle-right' style={margin: `0 .5rem`})
             span.to {{ data.destination.to.ch }}
         .clock
           .item.weather(v-if='clock.weather')
@@ -24,14 +24,14 @@
               span(:style='getMainStationTextStyle(key)') {{ stop }}
       .ticket-info(hidden)
         span
-          i.fas.fa-arrow-up
+          fa(icon='arrow-up')
           |  上車收票
     template(v-else)
 
   //- 下方區塊
   #bottom
     template(v-if='data')
-      .route()
+      .route
         .bar(:style='routeBarStyle')
           .arrow(:style='routeBarArrowStyle')
           span.text(:style='fontColorStyle') 分
@@ -45,7 +45,7 @@
                 .shape-arrow-left
             .info
               ul
-                li() transfer information
+                li transfer information
     template(v-else)
       .logo-banner
         img.logo(src='@/assets/img/logo-dark.svg')
@@ -198,7 +198,7 @@ export default {
   },
   watch: {
     data () {
-      this.$refs.destination.Reset()
+      this.$refs.destination.reset()
     }
   },
   updated () {

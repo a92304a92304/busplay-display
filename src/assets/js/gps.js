@@ -1,29 +1,38 @@
 // https://developer.mozilla.org/zh-TW/docs/Web/API/Geolocation/watchPosition
 
-var id, target, options;
+let id = null
 
-const success = (pos) => {
-  var crd = pos.coords
-  console.log(pos)
-  if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
-    console.log('Congratulations, you reached the target')
-    navigator.geolocation.clearWatch(id)
-  }
-}
-
-const error = (err) => {
-  console.warn('ERROR(' + err.code + '): ' + err.message)
-}
-
-target = {
-  latitude : 0,
-  longitude: 0
-}
-
-options = {
-  enableHighAccuracy: false,
+const options = {
+  enableHighAccuracy: true,
   timeout: 5000,
   maximumAge: 0
 }
 
-id = navigator.geolocation.watchPosition(success, error, options)
+const start = (success, error) => {
+  if(id !== null) return
+
+  id = navigator.geolocation.watchPosition((pos) => {
+    const crd = pos.coords
+    const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=17&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
+    const result = { img, crd }
+    success(result)
+  }, (e) => {
+    error(e.message)
+  }, options)
+}
+
+const stop = () => {
+  if(id) {
+    navigator.geolocation.clearWatch(id)
+    id = null
+  }
+}
+
+const getNearest = (current, route) => {
+
+}
+
+export default {
+  start,
+  stop,
+}
