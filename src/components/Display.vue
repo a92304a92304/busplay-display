@@ -3,7 +3,7 @@ main
   #display-area(:style='areaStyle')
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :clock='clock')
   .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000})
-    img.img-fluid(:src='locationImg')
+    img.img-fluid(v-if='location' :src='location.img')
   .alert.alert-info.debug-box
     h6.alert-heading.my-0(@click='debugMode=!debugMode') Debug Panel
     div(v-if='debugMode')
@@ -37,7 +37,10 @@ export default {
     return {
       debugMode: true,     // 是否顯示debug panel
       locationImg: null,
+      location: null,
       current: 0,
+      gpsTimer: null,
+      gpsTimerInterval: 10000,
     }
   },
   components: {
@@ -51,8 +54,8 @@ export default {
     vm.setWindow()
     vm.setTime()
     vm.fetchWeather()
-    vm.fetchRoute(`5b72fa10d139155080c9b860`)
-
+    vm.fetchRoute(`5b819a1ac8b5230c2ccf6390`)
+    vm.startGps()
   },
   methods: {
     // 設定當前時間
@@ -64,15 +67,32 @@ export default {
 
       setTimeout(this.setTime, 1000)
     },
+    // 開始定時取得GPS
+    startGps () {
+      const vm = this
+      this.gpsTimer = setInterval(() => {
+        vm.setGps()
+      }, this.gpsTimerInterval)
+    },
+    // 停止定時取得GPS
+    stopGps () {
+      clearInterval(this.gpsTimer)
+      this.gpsTimer = null
+    },
+    // 取得GPS
     setGps () {
       const vm = this
-      gps.start((result) => {
-        vm.locationImg = result.img
-        const current = [result.crd.latitude, result.crd.longitude]
+
+      gps.getPosition().then((result) => {
+        const current = [result.latitude, result.longitude]
         const stationsForCalc = []
+
+        vm.position = result
+
         vm.route.stations.forEach((val) => {
           stationsForCalc.push([parseFloat(val.location.lat), parseFloat(val.location.lng)])
         })
+
         vm.current = gps.getNearest(current, stationsForCalc)
         vm.setData()
       })
@@ -109,9 +129,8 @@ export default {
         type: 'GET',
         dataType: 'json',
         success (data) {
-          vm.route = data[0]
+          vm.route = data
           vm.setData()
-          vm.setGps()
         }
       })
     },
@@ -120,10 +139,7 @@ export default {
       const vm = this
       const url = 'https://works.ioa.tw/weather/api/weathers/5.json'
 
-      $.get(url, (data) => {
-        vm.clock.weather = data
-      })
-
+      $.get(url, weather => vm.clock.weather = weather)
       setTimeout(this.fetchWeather, 1000 * 60 * 10)
     },
     // 切換過場動畫
@@ -134,7 +150,6 @@ export default {
   watch: {
     current () {
       this.setData()
-
     },
   },
   mixins: [display]

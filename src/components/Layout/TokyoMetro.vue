@@ -42,12 +42,12 @@
             .name(v-else)
               span {{ data.stations[i - 1].ch }}
             .time
-              span.text {{ i * 2 }}
-              span.arrow(v-if='i==1' :class='{active: 1}')
-                .shape-arrow-left
+              span.text
+                span(v-show='i != 1') {{ i }}
+              span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
-              ul
-                li transfer information
+              ul #[li]
+
     template(v-else)
       .logo-banner
         img.logo(src='@/assets/img/logo-dark.svg')
@@ -110,7 +110,7 @@ export default {
     $.ajax({
       url: 'http://more.handlino.com/sentences.json',
       dataType: 'jsonp',
-      success: (data) => vm.lipsum = data.sentences[0]
+      // success: (data) => vm.lipsum = data.sentences[0]
     })
 },
   methods: {

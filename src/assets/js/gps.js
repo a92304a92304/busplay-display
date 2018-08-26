@@ -8,26 +8,21 @@ const options = {
   maximumAge: 0
 }
 
-const start = (success, error) => {
-  if(id !== null) return
+// 取得目前 GPS 方位
+const getPosition = () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const crd = pos.coords
+      const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=17&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
+      crd.img = img
+      const result = crd
 
-  id = navigator.geolocation.watchPosition((pos) => {
-    const crd = pos.coords
-    const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=17&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
-    const result = { img, crd }
-    success(result)
-  }, (e) => {
-    error(e.message)
-  }, options)
+      resolve(result)
+    })
+  })
 }
 
-const stop = () => {
-  if(id) {
-    navigator.geolocation.clearWatch(id)
-    id = null
-  }
-}
-
+// 取得距離最近的 index
 const getNearest = (current, stations) => {
 
   let resultIndex = null
@@ -59,7 +54,6 @@ const calcDistance = (lat1, lng1, lat2, lng2) => {
 }
 
 export default {
-  start,
-  stop,
+  getPosition,
   getNearest,
 }
