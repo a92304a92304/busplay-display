@@ -1,12 +1,13 @@
 <template lang="pug">
 main
-  #display-area(:style='areaStyle')
+  #display-area(:style='areaStyle' @click.stop='debugMode=!debugMode')
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :clock='clock')
   .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000})
-    img.img-fluid(v-if='location' :src='location.img')
-  .alert.alert-info.debug-box
-    h6.alert-heading.my-0(@click='debugMode=!debugMode') Debug Panel
-    div(v-if='debugMode')
+    img.img-fluid(v-if='position' :src='position.img')
+
+  .alert.alert-info.debug-box(v-if='debugMode')
+    h6.alert-heading.my-0 Debug Panel
+    div
       div
       .btn-group.btn-group-sm
         button.btn.btn-primary(@click='setRatio()') 16:9
@@ -30,32 +31,34 @@ import TokyoMetro from '@/components/Layout/TokyoMetro'
 import ScrollText from '@/components/Layout/ScrollText'
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
+import route from '@/assets/js/route'
 
 export default {
   name: 'Display',
   data () {
     return {
       debugMode: true,     // 是否顯示debug panel
-      locationImg: null,
-      location: null,
-      current: 0,
-      gpsTimer: null,
-      gpsTimerInterval: 10000,
+      position: null,      // 當前 gps 資訊
+      current: 0,          // 當前站 index
+      gpsTimer: null,      // 儲存 gps timer 的 id
+      gpsTimerInterval: 10000,  // 取得 gps 的間隔
     }
   },
   components: {
     TokyoMetro,
     ScrollText,
   },
-  // 元素已掛載時
   mounted () {
     const vm = this
-
     vm.setWindow()
     vm.setTime()
     vm.fetchWeather()
-    vm.fetchRoute(`5b819a1ac8b5230c2ccf6390`)
-    vm.startGps()
+
+    // 取得路線 data
+    vm.fetchRoute(`5b8b934e7059ff0c70cc76aa`).then(() => {
+      vm.startGps()
+    })
+
   },
   methods: {
     // 設定當前時間
@@ -69,10 +72,7 @@ export default {
     },
     // 開始定時取得GPS
     startGps () {
-      const vm = this
-      this.gpsTimer = setInterval(() => {
-        vm.setGps()
-      }, this.gpsTimerInterval)
+      this.gpsTimer = setInterval(this.setGps(), this.gpsTimerInterval)
     },
     // 停止定時取得GPS
     stopGps () {
@@ -96,12 +96,15 @@ export default {
         vm.current = gps.getNearest(current, stationsForCalc)
         vm.setData()
       })
+      return this.setGps
     },
     setData () {
       if(!this.route) return
       const r = this.route
       const current = this.current
+      const stations = []
 
+      // 將資料轉換為TokyoMetro接收的格式
       this.data = {
         routeName: r.routeName.ch,
         departureName: r.departureName,
@@ -110,9 +113,8 @@ export default {
         thisStop: r.stations[current].name,
       }
 
-      const stations = []
-
-      for (var i = 0; i < 7; i++) {
+      // 放入要顯示的7個站
+      for (let i = 0; i < 7; i++) {
         const num = i + current - 1
         const s = (num >= 0 && num < r.stations.length) ? r.stations[num].name : {}
         stations.push(s)
@@ -121,21 +123,21 @@ export default {
       this.data.stations = stations
     },
     fetchRoute (id) {
-      const vm = this
-      const url = `https://busplay-server.herokuapp.com/OneRouteXQ/${id}`
-
-      $.ajax({
-        url,
-        type: 'GET',
-        dataType: 'json',
-        success (data) {
-          vm.route = data
-          vm.setData()
-        }
+      return new Promise((resolve, reject) => {
+        route.fetchRoute(id).then(val => {
+          this.route = val
+          resolve()
+        })
       })
+    },
+    // 當 nextDest.minDistance 為 null 時，設定出發的站
+    setInitStation () {
+      this.route.nextDest.stationIndex
+      this.route.nextDest.minDistance
     },
     // 從api取得天氣物件
     fetchWeather () {
+      // TODO: 改用鎧企api
       const vm = this
       const url = 'https://works.ioa.tw/weather/api/weathers/5.json'
 

@@ -14,6 +14,7 @@ module.exports = {
   //       data: `@import '@/assets/css/global.sass';`
   //     }
   //   }
-  // }
-
+  // },
+  // 基本路径
+  baseUrl: './',
 }
