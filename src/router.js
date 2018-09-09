@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Index from '@/components/Index'
-import Display from '@/components/Display'
-import Login from '@/components/Login'
+import Index from '@/views/Index'
+import Display from '@/views/Display'
 
 Vue.use(Router)
 
@@ -16,7 +15,7 @@ export default new Router({
       component: Index
     },
     {
-      path: '/display',
+      path: '/display/:id',
       name: 'Display',
       component: Display
     },

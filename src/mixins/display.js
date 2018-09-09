@@ -46,7 +46,7 @@ const display = {
         this.width = width
         this.height = this.windowHeight
       }
-      
+
       this.htmlFontSize = this.width * 0.02
 
       $('html').css('font-size', this.htmlFontSize)
@@ -63,6 +63,9 @@ const display = {
       this.ratio = [w, h]
       this.setWidthHeight()
     },
+    toggleTransition () {
+      this.$refs.TokyoMetro.toggleTransition()
+    },
   },
   computed: {
     areaStyle () {
@@ -72,6 +75,9 @@ const display = {
       }
     },
   },
+  beforeDestroy () {
+
+  }
 }
 
 export { display }

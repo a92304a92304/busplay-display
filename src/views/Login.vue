@@ -25,15 +25,15 @@ export default {
     }
   },
   mounted () {
-    this.CheckAuth()
+    this.checkAuth()
   },
   methods: {
     // 登入
-    Login (username, password) {
+    login (username, password) {
       alert(`按下登入(${username}, ${password})`)
     },
     // 檢查登入狀態
-    CheckAuth () {
+    checkAuth () {
 
     }
   }
@@ -41,14 +41,13 @@ export default {
 </script>
 
 <style scoped lang="sass">
-@import "~bootswatch/dist/united/variables"
+@import "~bootswatch/dist/lux/variables"
 @import "~bootstrap/scss/bootstrap"
-@import "~bootswatch/dist/united/bootswatch"
+@import "~bootswatch/dist/lux/bootswatch"
 
 #login
   background-color: rgba(black, .8)
   padding: 1rem 2rem
-  border-radius: 5px
 
 h1, h2, label
   color: white

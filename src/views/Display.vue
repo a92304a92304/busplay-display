@@ -2,9 +2,8 @@
 main
   #display-area(:style='areaStyle' @click.stop='debugMode=!debugMode')
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :clock='clock')
-  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000})
+  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000} v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
-
   .alert.alert-info.debug-box(v-if='debugMode')
     h6.alert-heading.my-0 Debug Panel
     div
@@ -29,6 +28,7 @@ import moment from 'moment'
 
 import TokyoMetro from '@/components/Layout/TokyoMetro'
 import ScrollText from '@/components/Layout/ScrollText'
+
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
 import route from '@/assets/js/route'
@@ -50,12 +50,12 @@ export default {
   },
   mounted () {
     const vm = this
-    vm.setWindow()
+    const routeId = vm.$route.params.id
     vm.setTime()
     vm.fetchWeather()
-
+    vm.setWindow()
     // 取得路線 data
-    vm.fetchRoute(`5b8b934e7059ff0c70cc76aa`).then(() => {
+    vm.fetchRoute(routeId).then(() => {
       vm.startGps()
     })
 
@@ -84,6 +84,7 @@ export default {
       const vm = this
 
       gps.getPosition().then((result) => {
+        // TODO: 改寫此處
         const current = [result.latitude, result.longitude]
         const stationsForCalc = []
 
@@ -93,9 +94,10 @@ export default {
           stationsForCalc.push([parseFloat(val.location.lat), parseFloat(val.location.lng)])
         })
 
-        vm.current = gps.getNearest(current, stationsForCalc)
+        vm.current = gps.getNearest(current, stationsForCalc) // 主要改這個
         vm.setData()
       })
+
       return this.setGps
     },
     setData () {
@@ -144,10 +146,6 @@ export default {
       $.get(url, weather => vm.clock.weather = weather)
       setTimeout(this.fetchWeather, 1000 * 60 * 10)
     },
-    // 切換過場動畫
-    toggleTransition () {
-      this.$refs.TokyoMetro.toggleTransition()
-    }
   },
   watch: {
     current () {
