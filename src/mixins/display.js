@@ -9,10 +9,11 @@ const display = {
       width: 0,            // 實際顯示屏區域寬度
       height: 0,           // 實際顯示屏區域高度
       htmlFontSize: 16,    // 整體字級
-      debugMode: false,     // 是否顯示debug panel
+      debugMode: false,    // 是否顯示debug panel
       ratio: [16, 9],      // 顯示比例
-      route: null,
-      data: null,
+      route: null,         // 原始路線資料
+      data: null,          // 處理過後 要傳給顯示屏的資料
+      marquee: null,       // 跑馬燈內容
       clock: {
         time: '00:00',
         weather: null,

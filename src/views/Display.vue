@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle' @click.stop='debugMode=!debugMode')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :clock='clock')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :clock='clock')
 
   //- Debug 資訊
   .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000} v-if='debugMode')
@@ -55,7 +55,7 @@ export default {
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存 gps timer 的 id
       weatherTimer: null,
-      gpsTimerInterval: 10000,  // 取得 gps 的間隔
+      gpsTimerInterval: 5000,  // 取得 gps 的間隔
     }
   },
   components: {
@@ -110,6 +110,7 @@ export default {
     },
     setData () {
       if(!this.route) return
+
       const r = this.route
       const current = this.current
       const stations = []
@@ -139,6 +140,7 @@ export default {
       return new Promise((resolve, reject) => {
         route.fetchRoute(id).then(val => {
           this.route = val
+          this.marquee = val.marquee
           resolve()
         })
       })

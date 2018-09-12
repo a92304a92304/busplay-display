@@ -11,7 +11,10 @@ ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
 - px-per-sec: 每秒滾動多少px
 - start-delay: 開始滾動前等待的秒數
 - end-delay: 結束滾動後等待的秒數
+- noScrollDelay: 當不需要滾動時，等待的秒數
 - text-style: 內容字體樣式
+- marquee: 是否滾動直到文字全部消失於畫面中
+- forceScroll: 是否即使文字不夠長仍然滾動
 -->
 <template lang="pug">
 .box(ref='box' @click='reset()')
@@ -48,7 +51,11 @@ export default {
     },
     endDelay: {
       type: Number,
-      default: 3,
+      default: 10,
+    },
+    noScrollDelay: {
+      type: Number,
+      default: 5,
     },
     backgroundColor: {
       type: String,
@@ -61,7 +68,11 @@ export default {
     marquee: {
       type: Boolean,
       default: false
-    }
+    },
+    forceScroll: {
+      type: Boolean,
+      default: false
+    },
   },
   mounted () {
     this.start()
@@ -73,9 +84,12 @@ export default {
       this.offset = 0
       this.state = 0
 
-      if(this.calcOffset() <= 0){
+      if(this.calcOffset() <= 0 && !this.forceScroll){
         this.state = 3  // 若字數未超過則不播放滾動動畫
-      } else{
+        this.endTimer = setTimeout(() => {
+          this.$emit('end')
+        }, this.noScrollDelay * 1000)
+      } else {
         if(this.marquee) this.offset = -this.$refs.box.getBoundingClientRect().width
         this.startTimer = setTimeout(this.scrolling, this.startDelay * 1000)
       }
@@ -95,7 +109,10 @@ export default {
     // 滾動完後等待
     end () {
       this.state = 2
-      this.endTimer = setTimeout(this.start, this.endDelay * 1000)
+      this.endTimer = setTimeout(() => {
+        this.$emit('end')
+        this.start()
+      }, this.endDelay * 1000)
     },
     // 根據長度計算offset
     calcOffset () {
@@ -161,6 +178,11 @@ export default {
     catch(e){
       this.innerText = ''
     }
+  },
+  beforeDestroy() {
+    clearInterval(this.startTimer)
+    clearInterval(this.scrollingTimer)
+    clearInterval(this.endTimer)
   }
 }
 </script>

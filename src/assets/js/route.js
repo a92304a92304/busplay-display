@@ -1,6 +1,3 @@
-// import $ from 'jquery'
-// import gps from './gps'
-
 const $ = require('jquery')
 const gps = require('./gps')
 

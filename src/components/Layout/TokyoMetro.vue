@@ -37,7 +37,7 @@
           span.text(:style='fontColorStyle') 分
         ul.stations
           li(v-for='i in 7' :class='{passed: i == 1}')
-            .name(:class='{latin: test}' v-if='test')
+            .name(class='latin' v-if='bottomLang')
               span {{ data.stations[i-1].en }}
             .name(v-else)
               span {{ data.stations[i - 1].ch }}
@@ -52,9 +52,9 @@
       .logo-banner
         img.logo(src='@/assets/img/logo-dark.svg')
 
-  .marquee
-    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0')
-      | {{ lipsum }}
+  .marquee(v-if='isMarqueeShow')
+    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd')
+      | {{ i }}
 </template>
 
 <script>
@@ -74,9 +74,12 @@ export default {
       destinationBoxOffset: 0,
       transitions: ['flipDown', 'scrollDown', 'fade', ''],
       transition: 0,
+      mainStationText: null,
       mainStationTimer: null,
-      lipsum: null,
-      test: 1,
+      bottomLang: 0,              // 當前底部語言index
+      bottomLangs: [`ch`, `en`],  // 底部語言列表
+      bottomTimer: null,
+      currMarquee: 0,
       topInterval: 4000,
     }
   },
@@ -93,6 +96,10 @@ export default {
       type: Array,
       default: null
     },
+    marquee: {
+      type: Array,
+      default: null
+    }
   },
   components: {
     ScrollText,
@@ -107,11 +114,6 @@ export default {
       vm.setStyle()
     })
 
-    $.ajax({
-      url: 'http://more.handlino.com/sentences.json',
-      dataType: 'jsonp',
-      // success: (data) => vm.lipsum = data.sentences[0]
-    })
 },
   methods: {
     // 切換主要站名語言
@@ -167,6 +169,11 @@ export default {
       this.mainStationTimer = setInterval(() => {
         vm.toggleMainStationLang()
       }, vm.topInterval)
+    },
+    marqueeEnd () {
+      console.log(`滾完了`)
+      const LENGTH = this.marquee.length
+      this.currMarquee = ((this.currMarquee + 1) + LENGTH) % LENGTH
     }
   },
   computed: {
@@ -201,14 +208,21 @@ export default {
       }
     },
     routeBarArrowStyle () {
-      let color = (this.data.color) ? this.data.color : '#1e1e1e'
+      const color = (this.data.color) ? this.data.color : '#1e1e1e'
       return { borderColor: `transparent transparent transparent ${color}` }
+    },
+    isMarqueeShow () {
+      return this.marquee && this.marquee.length > 0
     }
   },
   watch: {
     data () {
-      if(this.$refs.destination) this.$refs.destination.reset()
-      this.resetMainStationLang()
+      // if(this.$refs.destination) this.$refs.destination.reset()
+
+      if(this.destination !== this.data.stations[0].ch) { // 當文字發生變化時，重設main station動畫
+        this.destination = this.data.stations[0].ch
+        this.resetMainStationLang()
+      }
     }
   },
   updated () {
