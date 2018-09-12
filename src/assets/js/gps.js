@@ -2,8 +2,6 @@
 
 const geolib = require('geolib')
 
-let id = null
-
 const options = {
   enableHighAccuracy: true,
   timeout: 5000,
@@ -15,7 +13,7 @@ const getPosition = () => {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const crd = pos.coords
-      const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=17&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
+      const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=18&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
       crd.img = img
       const result = crd
 
@@ -29,14 +27,18 @@ const getNearest = (current, stations) => {
   let resultIndex = null
   let resultDistance = Infinity
 
-  stations.forEach((val, index) => {
-    const thisDistance = calcDistance(...current, ...val)
+  try {
+    stations.forEach((val, index) => {
+      const thisDistance = calcDistance(...current, ...val)
 
-    if (resultDistance > thisDistance) {
-      resultDistance = thisDistance
-      resultIndex = index
-    }
-  })
+      if (resultDistance > thisDistance) {
+        resultDistance = thisDistance
+        resultIndex = index
+      }
+    })
+  } catch (e) {
+    return null
+  }
   return resultIndex
 }
 

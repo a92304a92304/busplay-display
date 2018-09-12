@@ -13,8 +13,8 @@
             span.to {{ data.destinationName.ch }}
         .clock
           .item.weather(v-if='clock.weather')
-            img.icon(:src='getWeatherIcon(clock.weather.desc)')
-            span.text {{ clock.weather.temperature }}°C
+            img.icon(:src='clock.weather.iconLink')
+            span.text {{ parseInt(clock.weather.temperature) }}°C
           .item.time
             | {{clock.time}}
       .main-station
@@ -38,7 +38,7 @@
         ul.stations
           li(v-for='i in 7' :class='{passed: i == 1}')
             .name(:class='{latin: test}' v-if='test')
-              span {{ data.nextStop_en[i-1] }}
+              span {{ data.stations[i-1].en }}
             .name(v-else)
               span {{ data.stations[i - 1].ch }}
             .time
@@ -58,7 +58,6 @@
 </template>
 
 <script>
-// NOTE: 使用mixins混入重複使用的變數或方法
 // TODO: 寫用來判斷一物件內有哪些語言 回傳語言總數等
 
 import colorDetector from '@/assets/js/colorDetector.js'
@@ -77,7 +76,8 @@ export default {
       transition: 0,
       mainStationTimer: null,
       lipsum: null,
-      test: 0,
+      test: 1,
+      topInterval: 4000,
     }
   },
   props:{
@@ -166,7 +166,7 @@ export default {
       this.lang = 0
       this.mainStationTimer = setInterval(() => {
         vm.toggleMainStationLang()
-      }, 3000)
+      }, vm.topInterval)
     }
   },
   computed: {
@@ -213,6 +213,9 @@ export default {
   },
   updated () {
     this.$nextTick(() => this.setStyle())
+  },
+  beforeDestroy () {
+
   }
 }
 </script>

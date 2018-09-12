@@ -76,7 +76,7 @@ const display = {
     },
   },
   beforeDestroy () {
-
+    this.stopGps()
   }
 }
 

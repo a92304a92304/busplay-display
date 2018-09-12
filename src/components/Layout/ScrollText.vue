@@ -44,11 +44,11 @@ export default {
     },
     startDelay: {
       type: Number,
-      default: 1,
+      default: 3,
     },
     endDelay: {
       type: Number,
-      default: 1,
+      default: 3,
     },
     backgroundColor: {
       type: String,
