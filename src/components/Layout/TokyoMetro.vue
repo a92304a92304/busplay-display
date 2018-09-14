@@ -20,7 +20,7 @@
       .main-station
         .box(ref='mainStationBox')
           transition-group(:name='transitions[transition]')
-            h1(:ref='`mainStationText${key}`', :key='key', :class='key', v-for='(stop, key) in data.thisStop' v-show='getAllLangs(data.thisStop)[lang] == key')
+            h1(:ref='`mainStationText${key}`', :key='key', :class='key', v-for='(stop, key) in data.thisStop' v-show='getAllLangs(data.thisStop)[mainStationLang] == key')
               span(:style='getMainStationTextStyle(key)') {{ stop }}
       .ticket-info(hidden)
         span
@@ -37,9 +37,9 @@
           span.text(:style='fontColorStyle') 分
         ul.stations
           li(v-for='i in 7' :class='{passed: i == 1}')
-            .name(class='latin' v-if='bottomLang')
+            .name(class='latin' v-if='bottomLangs[bottomLang] === `en`')
               span {{ data.stations[i-1].en }}
-            .name(v-else)
+            .name( v-if='bottomLangs[bottomLang] === `ch`')
               span {{ data.stations[i - 1].ch }}
             .time
               span.text
@@ -47,6 +47,7 @@
               span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
               ul #[li]
+      .spot
 
     template(v-else)
       .logo-banner
@@ -58,8 +59,6 @@
 </template>
 
 <script>
-// TODO: 寫用來判斷一物件內有哪些語言 回傳語言總數等
-
 import colorDetector from '@/assets/js/colorDetector.js'
 import ScrollText from '@/components/Layout/ScrollText'
 import $ from 'jquery'
@@ -68,19 +67,24 @@ export default {
   name: 'TokyoMetro',
   data () {
     return {
-      lang: 0,
+
       routeBarTop: 0,
       destinationBoxStyle: {},
       destinationBoxOffset: 0,
       transitions: ['flipDown', 'scrollDown', 'fade', ''],
-      transition: 0,
-      mainStationText: null,
-      mainStationTimer: null,
+      transition: 0,              // 當前轉場樣式index
+      //
+      mainStationLang: 0,         // 當前主站名index
+      mainStationText: null,      // 暫存主站名字串
+      mainStationTimer: null,     // 儲存切換主站名timer id
+      //
       bottomLang: 0,              // 當前底部語言index
       bottomLangs: [`ch`, `en`],  // 底部語言列表
       bottomTimer: null,
+      //
       currMarquee: 0,
-      topInterval: 4000,
+      mainStationInterval: 4 * 1000,
+      bottomInterval: 10 * 1000,
     }
   },
   props:{
@@ -109,6 +113,7 @@ export default {
 
     vm.setStyle()
     vm.resetMainStationLang()
+    vm.resetBottomLang()
 
     $(window).resize(() => {
       vm.setStyle()
@@ -118,9 +123,15 @@ export default {
   methods: {
     // 切換主要站名語言
     toggleMainStationLang () {
-      if(!this.data) return 0
+      if(!this.data) return
       const LENGTH = this.getAllLangs(this.data.thisStop).length    // 總語言數量
-      this.lang = ((this.lang + 1) + LENGTH) % LENGTH
+      this.mainStationLang = ((this.mainStationLang + 1) + LENGTH) % LENGTH
+    },
+    // 切換底部語言
+    toggleBottomLang () {
+      if(!this.data) return
+      const LENGTH = this.bottomLangs.length    // 總語言數量
+      this.bottomLang = ((this.bottomLang + 1) + LENGTH) % LENGTH
     },
     // 切換轉場效果
     toggleTransition () {
@@ -161,17 +172,27 @@ export default {
       if($routeTime.position())
         vm.routeBarTop = $routeTime.position().top - ($routeBar.height() - $routeTime.height()) / 2
     },
+    // 重置主車站語言
     resetMainStationLang () {
       const vm = this
 
       clearInterval(this.mainStationTimer)
-      this.lang = 0
+      this.mainStationLang = 0
       this.mainStationTimer = setInterval(() => {
         vm.toggleMainStationLang()
-      }, vm.topInterval)
+      }, vm.mainStationInterval)
     },
+    resetBottomLang () {
+      const vm = this
+
+      clearInterval(this.bottomLang)
+      this.bottomLang = 0
+      this.bottomTimer = setInterval(() => {
+        vm.toggleBottomLang()
+      }, vm.bottomInterval)
+    },
+    // 當一條跑馬燈文字滾完後觸發，換到下一條文字
     marqueeEnd () {
-      console.log(`滾完了`)
       const LENGTH = this.marquee.length
       this.currMarquee = ((this.currMarquee + 1) + LENGTH) % LENGTH
     }

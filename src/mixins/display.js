@@ -1,5 +1,6 @@
 // 混入
 import $ from 'jquery'
+import screenfull from 'screenfull'
 
 const display = {
   data () {

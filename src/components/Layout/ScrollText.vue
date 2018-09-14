@@ -16,6 +16,7 @@ ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
 - marquee: 是否滾動直到文字全部消失於畫面中
 - forceScroll: 是否即使文字不夠長仍然滾動
 -->
+
 <template lang="pug">
 .box(ref='box' @click='reset()')
   .gradient-left(:class='{scrolling: (state == 1 || state == 2)}' :style='getGradientStyle()')

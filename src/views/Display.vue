@@ -10,21 +10,19 @@ main
     .list
       table(v-if='route')
         tbody
-          tr(v-for='(i, index) in route.stations' :class='{ active: index == current }')
+          tr(v-for='(i, index) in route.stations' :class='{ active: index == current, passed: i.passed }')
             td {{ i.name.ch }}
-            td 過?: {{ i.passed }}
-            td 距下: {{ i.distance }}
+            td 距下 {{ i.distance }}m
     .current(v-if='route')
       div 前 [{{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }}, {{ route.current.prevDistance }}m
       div 下 [{{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }}, {{ route.current.nextMinDistance }}m
   .alert.alert-info.debug-box(v-if='debugMode')
     h6.alert-heading.my-0 Debug Panel
     div
-      div
       .btn-group.btn-group-sm
         button.btn.btn-primary(@click='setRatio()') 16:9
         button.btn.btn-primary(@click='setRatio(4,3)') 4:3
-        button.btn.btn-secondary(@click='enterFullScreen ()') fullscreen
+        button.btn.btn-secondary(@click='enterFullScreen()') 全屏
       br
       .btn-group.btn-group-sm
         button.btn.btn-danger(@click='current--') #[fa(icon='angle-left')]
@@ -196,18 +194,23 @@ main
   position: absolute
   top: 0
   right: 0
-  width: 20rem
+  width: 15rem
   zIndex: 10000
   .list
     height: 10rem
     overflow: scroll
     table
-      tr.active
-        background-color: $yellow
+      tr
+        &.active
+          background-color: $yellow
+        &.passed
+          background-color: rgba($yellow, .5)
+
       td
         padding: 0 .2rem
   .current
     padding: .2rem
     color: $yellow
+
 
 </style>
