@@ -52,14 +52,14 @@
               ul #[li]
       template(v-else)
         .spot
-          //- transition(name='headline')
-          h4.headline-enter-active(v-if='carousels[carousel - 1].type === `spot`') 周邊資訊 / Information
+          h4.headline-enter-active(:style='{ borderColor: data.color }') 周邊資訊 / Information
           .box
             .row.list
-              .col-auto.item.item-enter-active(v-for='(i, index) in carousels[carousel - 1].content' :key='index' :style='{ animationDelay: `${0.08 + index * 0.05}s` }')
+              .col-auto.item.item-enter-active(v-for='(i, index) in getCarouselContent(carousel - 1)' :key='index' :style='{ animationDelay: `${0.1 + index * 0.05}s` }')
                 .row.align-items-center.no-gutters
                   .col-auto.icon
-                    fa(:icon='i.icon')
+                    img(src='@/assets/img/icon/mrt.svg' v-if='i.icon === `mrt`')
+                    fa(:icon='i.icon' v-else)
                   .col.text
                     .ch {{ i.name.ch }}
                     .en {{ i.name.en }}
@@ -69,17 +69,17 @@
         img.logo(src='@/assets/img/logo-dark.svg')
 
   .marquee(v-if='isMarqueeShow')
-    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
+    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
 </template>
 
 <script>
 import colorDetector from '@/assets/js/colorDetector.js'
-import ScrollText from '@/components/Layout/ScrollText'
+import ScrollText from '@/components/ScrollText'
 import $ from 'jquery'
 
 const mainStationInterval =  4 * 1000   // 主車站更換語言間隔
 const bottomInterval      = 12 * 1000   // 底部更換語言間隔
-const routeDuration       = 5 * 1000   // 顯示路線的維持時間
+const routeDuration       = 10 * 1000   // 顯示路線的維持時間
 
 export default {
   name: 'TokyoMetro',
@@ -195,21 +195,28 @@ export default {
       const length = this.marquee.length
       this.currMarquee = ((this.currMarquee + 1) + length) % length
     },
-    setCarousel () {
-
-      const vm = this
-      const length = vm.carousels.length
-
-      if (length === 0) {
-        vm.carousel = 0
-      } else {
-        vm.carousel = ((vm.carousel + 1) + (length + 1)) % (length + 1)
-        let duration = (vm.carousel == 0) ? routeDuration : vm.carousels[vm.carousel - 1].duration
-        duration = duration || 5000
-        vm.carouselTimer = setTimeout(() => {
-          vm.setCarousel()
-        }, duration)
+    getCarouselContent (index) {
+      try {
+        return (index <= this.carousels.length) ? this.carousels[index].content : []
+      } catch (e) {
+        return []
       }
+    },
+    setCarousel () {
+      const vm = this
+      const length = vm.carousels.length  // 輪播訊息總數量
+      let duration = 5000
+
+      if (length === 0) {   // 若無輪播訊息
+        vm.carousel = 0     // 將當前輪播訊息設定為 0，即預設值顯示路線
+      } else {
+        vm.carousel = ((vm.carousel + 1) + (length + 1)) % (length + 1) // 切換到下一則輪播訊息
+        duration = (vm.carousel == 0)   // 播放的持續時間，若本則訊息為`路線`:
+          ? routeDuration   // 設為路線畫面固定的持續時間
+          : vm.carousels[vm.carousel - 1].duration  // 設為各則訊息的持續時間
+          || 5000   // 取得 duration 失敗時的預設值
+      }
+      vm.carouselTimer = setTimeout(() => vm.setCarousel(), duration)   // 在 duration 後重複執行
     },
   },
   computed: {
@@ -251,19 +258,25 @@ export default {
     isMarqueeShow () {
       return this.marquee && this.marquee.length > 0
     },
+    carouselContentText () {
+      return JSON.stringify(this.carousels)
+    }
   },
   watch: {
     data () {
-      // if(this.$refs.destination) this.$refs.destination.reset()
-
       if(this.destination !== this.data.stations[0].ch) { // 當文字發生變化時，重設main station動畫
         this.destination = this.data.stations[0].ch
         this.resetMainStationLang()
       }
     },
     carousel () {
-      // console.log(`偵測輪播發生變動`,this.carousel)
-    }
+    },
+    // carouselContentText () {
+    //   console.log(`偵測輪播發生變動`,this.carouselContentText)
+    //   clearInterval(this.carouselTimer)
+    //   this.carousel = 0
+    //   this.setCarousel()
+    // }
   },
   updated () {
     this.$nextTick(() => this.setStyle())
@@ -283,9 +296,9 @@ export default {
 @import "~bootstrap/scss/mixins"
 
 // 過場動畫
-@import "../../assets/css/style"
-@import "../../assets/css/animation"
+@import "../assets/css/style"
+@import "../assets/css/animation"
 
 // TokyoMetro
-@import "../../assets/css/Layout/tokyoMetro"
+@import "../assets/css/tokyoMetro"
 </style>

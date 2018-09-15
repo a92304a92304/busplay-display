@@ -4,7 +4,7 @@
 @import "~bootstrap/scss/mixins"
 
 // 自訂函數
-@import "../function"
+@import "function"
 
 $top-bg-color: #f2f2f2
 $fonts: "PingFang TC" ,"文泉驛正黑", "WenQuanYi Zen Hei", "儷黑 Pro", "LiHei Pro", "微軟正黑體", "Microsoft JhengHei", Arial
@@ -95,7 +95,8 @@ h1, h2, h3, h4, h5, h6, span
         width: auto
       span.text
 
-$main-station-font-size: 3.5rem
+$main-station-font-size: 4rem
+
 .main-station
   width: 80%
   +px(1rem)
@@ -298,8 +299,12 @@ $main-station-font-size: 3.5rem
     margin-bottom: .4rem
     .icon
       font-size: 1.5rem
-      min-width: 2.8rem
+      // min-width: 2.8rem
+      margin-right: .7rem
       text-align: center
+      img
+        height: 1.5rem
+        width: auto
     .text
       font-size: 1.1rem
       .ch
@@ -310,6 +315,7 @@ $main-station-font-size: 3.5rem
 @keyframes fade-in
   from
     opacity: 0
+    transform: translateX(-1rem)
   to
     transform: none
 

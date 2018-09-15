@@ -4,32 +4,33 @@ main
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock')
 
   //- Debug 資訊
-  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000} v-if='debugMode')
+  .debug.img(v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
-  .debug-stations(v-if='debugMode')
+
+  .debug.stations(v-if='debugMode')
     .list
       table(v-if='route')
         tbody
           tr(v-for='(i, index) in route.stations' :class='{ active: index === current, passed: i.passed }')
-            td {{ i.name.ch }}
+            td #[fa(icon='arrow-right' v-if='index === current')] {{ i.name.ch }}
             td 距下 {{ i.distance }}m
-    .current(v-if='route')
-      div 前 [{{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }}, {{ route.current.prevDistance }}m
-      div 下 [{{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }}, {{ route.current.nextMinDistance }}m
-  .alert.alert-info.debug-box(v-if='debugMode')
-    h6.alert-heading.my-0 Debug Panel
-    div
-      .btn-group.btn-group-sm
-        button.btn.btn-primary(@click='setRatio()') 16:9
-        button.btn.btn-primary(@click='setRatio(4,3)') 4:3
-        button.btn.btn-secondary(@click='enterFullScreen()') 全屏
-      br
-      .btn-group.btn-group-sm
-        button.btn.btn-danger(@click='current--') #[fa(icon='angle-left')]
-        button.btn.btn-danger(@click='current++') #[fa(icon='angle-right')]
-        button.btn.btn-secondary(@click='toggleTransition()') 換轉場效果
-        button.btn.btn-warning(@click='initRoute()') init route
-        button.btn.btn-info(onclick="javascript:window.location.reload()") Refresh
+
+  .debug.current(v-if='debugMode && route')
+    div 前 [{{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }}, {{ route.current.prevDistance }}m
+    div 下 [{{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }}, {{ route.current.nextMinDistance }}m
+    .text-light lat:{{ position.latitude }} #[br] lng:{{ position.longitude }} #[br] acc:{{ position.accuracy }}
+
+  .debug.btn(v-if='debugMode')
+    .btn-group.btn-group-sm
+      button.btn.btn-primary(@click='setRatio()') 16:9
+      button.btn.btn-primary(@click='setRatio(4,3)') 4:3
+      button.btn.btn-dark(@click='enterFullScreen()') 全屏
+    br
+    .btn-group.btn-group-sm
+      button.btn.btn-danger(@click='current--') #[fa(icon='angle-left')]
+      button.btn.btn-danger(@click='current++') #[fa(icon='angle-right')]
+      button.btn.btn-secondary(@click='toggleTransition()') toggle transition
+      button.btn.btn-warning(@click='initRoute()') reset route
 </template>
 
 <script>
@@ -37,8 +38,8 @@ import $ from 'jquery'
 import screenfull from 'screenfull'
 import moment from 'moment'
 
-import TokyoMetro from '@/components/Layout/TokyoMetro'
-import ScrollText from '@/components/Layout/ScrollText'
+import TokyoMetro from '@/components/TokyoMetro'
+import ScrollText from '@/components/ScrollText'
 
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
@@ -55,11 +56,7 @@ export default {
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
       gpsTimerInterval: 5000,  // 取得 gps 的間隔
-      carousels: [{
-        type: `spot`,
-        duration: 5000,
-        content: []
-      }],
+      carousels: [],
     }
   },
   components: {
@@ -139,17 +136,16 @@ export default {
     setCarousel () {
       const vm = this
       const info = vm.route.stations[this.current].info
-      this.carousels.length = 0
+      const duration = 8000
+      this.carousels.length = 0 // 清空輪播訊息陣列
 
-      if (info.spot) {
-        this.carousels.push({
+      if (info.spot.length) {
+        vm.carousels.push({
           type: `spot`,
-          duration: 10000,
           content: info.spot,
+          duration,
         })
       }
-
-      // console.log(`輪播`, this.carousels)
     },
     initRoute () {
       route.initNewRoute(this.route)
@@ -168,6 +164,7 @@ export default {
       const vm = this
       gps.getPosition().then((position) => {
         const url = `https://busplay-server.herokuapp.com/weather/${position.latitude}&${position.longitude}`
+        console.log(url)
         $.get(url, weather => {
           if(weather.success) vm.clock.weather = weather.data
         })
@@ -191,9 +188,9 @@ export default {
 </script>
 
 <style scoped lang="sass">
-@import "~bootstrap/scss/functions"
-@import "~bootstrap/scss/variables"
-@import "~bootstrap/scss/mixins"
+@import "~bootswatch/dist/lux/variables"
+@import "~bootstrap/scss/bootstrap"
+@import "~bootswatch/dist/lux/bootswatch"
 
 main
   display: flex
@@ -209,30 +206,46 @@ main
   border: 1px solid $gray-300
   width: 50%
 
-.debug-stations
-  background-color: rgba(black, .7)
+.debug
+  background-color: rgba(black, .9)
+  font-size: .7rem
   color: white
-  font-size: .8rem
+  z-index: 9999
+  overflow: hidden
   position: absolute
-  top: 0
-  right: 0
-  width: 15rem
-  zIndex: 10000
-  .list
-    height: 10rem
-    overflow: scroll
-    table
-      tr
-        &.active
-          background-color: $yellow
-        &.passed
-          background-color: rgba($yellow, .5)
+  opacity: .9
+  padding: .5rem
+  &.img
+    bottom: 0
+    left: 0
+    height: 300px
+    width: 300px
+    padding: 0
+    margin: 0
+  &.stations
+    position: absolute
+    top: 0
+    right: 0
+    width: 15rem
+    .list
+      height: 10rem
+      overflow: scroll
+      table
+        tr
+          &.active
+            background-color: $yellow
+          &.passed
+            background-color: rgba($yellow, .5)
+        td
+          padding: 0 .2rem
 
-      td
-        padding: 0 .2rem
-  .current
-    padding: .2rem
+  &.current
+    top: 0
+    right: calc(15rem + .5rem)
     color: $yellow
 
-
+  &.btn
+    bottom: 1rem
+    right: 1rem
+    text-align: left
 </style>

@@ -17,6 +17,7 @@ const getPosition = () => {
       crd.img = img
       const result = crd
 
+      if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
       resolve(result)
     })
   })
