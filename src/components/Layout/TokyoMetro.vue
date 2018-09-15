@@ -1,5 +1,9 @@
 <template lang="pug">
 #tokyo-metro(ref='tokyoMetro')
+  //- Debug 用
+  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:9999})
+    //- .text-danger carousel {{ carousel }}
+
   //- 上方區塊
   #top(ref='top' :style='topStyle')
     template(v-if='data')
@@ -30,7 +34,7 @@
   //- 下方區塊
   #bottom
     template(v-if='data')
-      .route(hidden)
+      .route(v-if='carousel === 0')
         .bar(:style='routeBarStyle')
           .arrow(:style='routeBarArrowStyle')
           span.text(:style='fontColorStyle')
@@ -46,25 +50,26 @@
               span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
               ul #[li]
-      .spot(v-if='data')
-        h4 周邊資訊 / Information
-        .box
-          .row.list
-            .col-4.item(v-for='i in 12')
-              .row.align-items-center.no-gutters
-                .col-auto.icon
-                  fa(icon='coffee' v-if='i%2 == 0')
-                  fa(icon='question' v-else)
-                .col.text
-                  .ch 光華美食街{{ i }}
-                  .en Food Street
+      template(v-else)
+        .spot
+          //- transition(name='headline')
+          h4.headline-enter-active(v-if='carousels[carousel - 1].type === `spot`') 周邊資訊 / Information
+          .box
+            .row.list
+              .col-auto.item.item-enter-active(v-for='(i, index) in carousels[carousel - 1].content' :key='index' :style='{ animationDelay: `${0.08 + index * 0.05}s` }')
+                .row.align-items-center.no-gutters
+                  .col-auto.icon
+                    fa(:icon='i.icon')
+                  .col.text
+                    .ch {{ i.name.ch }}
+                    .en {{ i.name.en }}
 
     template(v-else)
       .logo-banner
         img.logo(src='@/assets/img/logo-dark.svg')
 
   .marquee(v-if='isMarqueeShow')
-    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' hidden) {{ i }}
+    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
 </template>
 
 <script>
@@ -72,8 +77,9 @@ import colorDetector from '@/assets/js/colorDetector.js'
 import ScrollText from '@/components/Layout/ScrollText'
 import $ from 'jquery'
 
-const mainStationInterval = 4 * 1000
-const bottomInterval      = 12 * 1000
+const mainStationInterval =  4 * 1000   // 主車站更換語言間隔
+const bottomInterval      = 12 * 1000   // 底部更換語言間隔
+const routeDuration       = 5 * 1000   // 顯示路線的維持時間
 
 export default {
   name: 'TokyoMetro',
@@ -94,6 +100,8 @@ export default {
       bottomTimer: null,
       //
       currMarquee: 0,
+      carousel: 0,
+      carouselTimer: null,
     }
   },
   props:{
@@ -101,7 +109,7 @@ export default {
     clock: { type: Object, default: null },
     ratio: { type: Array, default: null },
     marquee: { type: Array, default: null },
-    carousel: { type: Array, default: null },
+    carousels: { type: Array, default: null },
   },
   components: {
     ScrollText,
@@ -116,24 +124,25 @@ export default {
     $(window).resize(() => {
       vm.setStyle()
     })
+    vm.setCarousel()
 },
   methods: {
     // 切換主要站名語言
     toggleMainStationLang () {
       if(!this.data) return
-      const LENGTH = this.getAllLangs(this.data.thisStop).length    // 總語言數量
-      this.mainStationLang = ((this.mainStationLang + 1) + LENGTH) % LENGTH
+      const length = this.getAllLangs(this.data.thisStop).length    // 總語言數量
+      this.mainStationLang = ((this.mainStationLang + 1) + length) % length
     },
     // 切換底部語言
     toggleBottomLang () {
       if(!this.data) return
-      const LENGTH = this.bottomLangs.length    // 總語言數量
-      this.bottomLang = ((this.bottomLang + 1) + LENGTH) % LENGTH
+      const length = this.bottomLangs.length    // 總語言數量
+      this.bottomLang = ((this.bottomLang + 1) + length) % length
     },
     // 切換轉場效果
     toggleTransition () {
-      const LENGTH = this.transitions.length
-      this.transition = ((this.transition + 1) + LENGTH) % LENGTH
+      const length = this.transitions.length
+      this.transition = ((this.transition + 1) + length) % length
     },
     // 取得主要站名 h1>span 的style
     getMainStationTextStyle (lang) {
@@ -183,9 +192,25 @@ export default {
     },
     // 當一條跑馬燈文字滾完後觸發，換到下一條文字
     marqueeEnd () {
-      const LENGTH = this.marquee.length
-      this.currMarquee = ((this.currMarquee + 1) + LENGTH) % LENGTH
-    }
+      const length = this.marquee.length
+      this.currMarquee = ((this.currMarquee + 1) + length) % length
+    },
+    setCarousel () {
+
+      const vm = this
+      const length = vm.carousels.length
+
+      if (length === 0) {
+        vm.carousel = 0
+      } else {
+        vm.carousel = ((vm.carousel + 1) + (length + 1)) % (length + 1)
+        let duration = (vm.carousel == 0) ? routeDuration : vm.carousels[vm.carousel - 1].duration
+        duration = duration || 5000
+        vm.carouselTimer = setTimeout(() => {
+          vm.setCarousel()
+        }, duration)
+      }
+    },
   },
   computed: {
     topStyle () {
@@ -224,9 +249,8 @@ export default {
       return { borderColor: `transparent transparent transparent ${color}` }
     },
     isMarqueeShow () {
-      // return 0
       return this.marquee && this.marquee.length > 0
-    }
+    },
   },
   watch: {
     data () {
@@ -238,7 +262,7 @@ export default {
       }
     },
     carousel () {
-      console.log(this.carousel)
+      // console.log(`偵測輪播發生變動`,this.carousel)
     }
   },
   updated () {
@@ -247,6 +271,7 @@ export default {
   beforeDestroy () {
     clearInterval(this.mainStationTimer)
     clearInterval(this.bottomTimer)
+    clearInterval(this.carouselTimer)
   }
 }
 </script>

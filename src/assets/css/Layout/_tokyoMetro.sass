@@ -97,7 +97,7 @@ h1, h2, h3, h4, h5, h6, span
 
 $main-station-font-size: 3.5rem
 .main-station
-  width: 75%
+  width: 80%
   +px(1rem)
   +py(.5rem)
   .box
@@ -282,17 +282,23 @@ $main-station-font-size: 3.5rem
     padding-left: .5rem
     margin-bottom: .8rem
     font-weight: bold
+    display: inline-block
   .box
     padding: 0 2rem
     height: calc(100% - 4.5rem)
+    width: 100%
+
   .list
     align-items: center
+    justify-content: space-around
     height: 100%
+    width: auto
+
   .item
     margin-bottom: .4rem
     .icon
       font-size: 1.5rem
-      min-width: 2.5rem
+      min-width: 2.8rem
       text-align: center
     .text
       font-size: 1.1rem
@@ -300,3 +306,25 @@ $main-station-font-size: 3.5rem
         margin-bottom: -.2rem
       .en
         font-size: .8rem
+
+@keyframes fade-in
+  from
+    opacity: 0
+  to
+    transform: none
+
+
+@keyframes move-in
+  from
+    opacity: 0
+    transform: translateY(1rem)
+  to
+    transform: none
+
+.headline-enter-active
+  animation: fade-in .5s
+  animation-fill-mode: backwards
+
+.item-enter-active
+  animation: move-in .5s
+  animation-fill-mode: backwards

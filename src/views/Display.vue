@@ -1,7 +1,7 @@
 <template lang="pug">
 main
-  #display-area(:style='areaStyle' @click.stop='debugMode=!debugMode')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousel='carousel' :clock='clock')
+  #display-area(:style='areaStyle' @click.stop='debugMode = !debugMode')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock')
 
   //- Debug 資訊
   .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000} v-if='debugMode')
@@ -48,42 +48,17 @@ export default {
   name: 'Display',
   data () {
     return {
-      debugMode: true,     // 是否顯示debug panel
+      debugMode: false,     // 是否顯示debug panel
       position: null,      // 當前 gps 資訊
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存gps timer的id
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
       gpsTimerInterval: 5000,  // 取得 gps 的間隔
-      carousel: [{
+      carousels: [{
         type: `spot`,
-        duration: 3000,
-        content: [
-          {
-            "spotId" : 2,
-            "name" : {
-              "ch" : "光華美食街",
-              "en" : "Food Street"
-            },
-            "icon" : "question"
-          },
-          {
-            "spotId" : 1,
-            "name" : {
-              "ch" : "伯朗咖啡館",
-              "en" : "Mr. Brown Coffee"
-            },
-            "icon" : "question"
-          },
-          {
-            "spotId" : 0,
-            "name" : {
-              "ch" : "三創生活園區",
-              "en" : "SYNTREND"
-            },
-            "icon" : "question"
-          }
-        ]
+        duration: 5000,
+        content: []
       }],
     }
   },
@@ -130,6 +105,7 @@ export default {
         vm.position = position
         route.setCurrent(vm.route, position)
         vm.current = vm.route.current.nextIndex
+        vm.setCarousel()
         vm.setData()
       })
 
@@ -159,6 +135,21 @@ export default {
       }
 
       this.data.stations = stations
+    },
+    setCarousel () {
+      const vm = this
+      const info = vm.route.stations[this.current].info
+      this.carousels.length = 0
+
+      if (info.spot) {
+        this.carousels.push({
+          type: `spot`,
+          duration: 10000,
+          content: info.spot,
+        })
+      }
+
+      // console.log(`輪播`, this.carousels)
     },
     initRoute () {
       route.initNewRoute(this.route)
