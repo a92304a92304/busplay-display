@@ -3,8 +3,9 @@ section
   .loading(v-if='!routes')
     fa(icon='spinner' spin)
 
-  .card.item.mb-1(v-for='route in routes' v-if='routes')
-    .card-body
+  transition(name='fade')
+    .card.item.mb-1(v-for='route in routes' v-if='routes' :style='{ borderLeftColor: route.color }')
+      .card-body
         .row.align-items-center
           .col-auto
             .name {{ route.name.ch }}
@@ -17,8 +18,7 @@ section
               span {{ route.destination.ch }}
               small(v-if='route.destination.hasOwnProperty(`en`)') {{ route.destination.en }}
           .col-auto
-            router-link.play(:to='`/display/${route.id}`')
-              fa(icon='play')
+            router-link.play(:to='`/display/${route.id}`') #[fa(icon='play')]
 </template>
 
 <script>
@@ -56,6 +56,8 @@ export default {
   text-align: center
 
 .item
+  border-left: .5rem solid #bbb
+
   .name
     font-size: 2rem
     font-weight: 900
@@ -70,5 +72,15 @@ export default {
   .play
     font-size: 1.5rem
     color: $green
+
+@keyframes fade
+  from
+    opacity: 0
+    transform: translateY(1rem)
+  to
+    opacity: 1
+
+.fade-enter-active
+  animation: fade .3s
 
 </style>

@@ -1,7 +1,7 @@
 const $ = require('jquery')
 const gps = require('./gps')
 
-const distanceOffset = 10
+const distanceOffset = 30
 
 const fetchRoute = (id) => {
   return new Promise((resolve, reject) => {

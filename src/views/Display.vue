@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle' @click.stop='debugMode=!debugMode')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :clock='clock')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousel='carousel' :clock='clock')
 
   //- Debug 資訊
   .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:1000} v-if='debugMode')
@@ -10,7 +10,7 @@ main
     .list
       table(v-if='route')
         tbody
-          tr(v-for='(i, index) in route.stations' :class='{ active: index == current, passed: i.passed }')
+          tr(v-for='(i, index) in route.stations' :class='{ active: index === current, passed: i.passed }')
             td {{ i.name.ch }}
             td 距下 {{ i.distance }}m
     .current(v-if='route')
@@ -51,9 +51,40 @@ export default {
       debugMode: true,     // 是否顯示debug panel
       position: null,      // 當前 gps 資訊
       current: 0,          // 當前站 index
-      gpsTimer: null,      // 儲存 gps timer 的 id
-      weatherTimer: null,
+      gpsTimer: null,      // 儲存gps timer的id
+      weatherTimer: null,  // 儲存天氣timer的id
+      clockTimer: null,
       gpsTimerInterval: 5000,  // 取得 gps 的間隔
+      carousel: [{
+        type: `spot`,
+        duration: 3000,
+        content: [
+          {
+            "spotId" : 2,
+            "name" : {
+              "ch" : "光華美食街",
+              "en" : "Food Street"
+            },
+            "icon" : "question"
+          },
+          {
+            "spotId" : 1,
+            "name" : {
+              "ch" : "伯朗咖啡館",
+              "en" : "Mr. Brown Coffee"
+            },
+            "icon" : "question"
+          },
+          {
+            "spotId" : 0,
+            "name" : {
+              "ch" : "三創生活園區",
+              "en" : "SYNTREND"
+            },
+            "icon" : "question"
+          }
+        ]
+      }],
     }
   },
   components: {
@@ -80,7 +111,7 @@ export default {
       const s = moment().format('ss')
       this.clock.time = (s % 2 == 0) ? `${h}:${m}` : `${h} ${m}`
 
-      setTimeout(this.setTime, 1000)
+      this.clockTimer = setTimeout(this.setTime, 1000)
     },
     // 開始定時取得GPS
     startGps () {
@@ -96,9 +127,7 @@ export default {
       const vm = this
 
       gps.getPosition().then((position) => {
-        // TODO: 改寫此處
         vm.position = position
-
         route.setCurrent(vm.route, position)
         vm.current = vm.route.current.nextIndex
         vm.setData()
@@ -115,7 +144,7 @@ export default {
 
       // 將資料轉換為TokyoMetro接收的格式
       this.data = {
-        routeName: r.routeName.ch,
+        routeName: r.routeName,
         departureName: r.departureName,
         destinationName: r.destinationName,
         color: r.themeColor,
@@ -156,7 +185,9 @@ export default {
     },
     stopWeather () {
       clearInterval(this.weatherTimer)
+      clearInterval(this.clockTimer)
       this.weatherTimer = null
+      this.clockTimer = null
     },
   },
   watch: {

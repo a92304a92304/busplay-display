@@ -5,12 +5,12 @@
     template(v-if='data')
       .bus-info
         .bus-name
-          h2(:style='busNameStyle') {{ data.routeName }}
+          h2(:style='busNameStyle') {{ data.routeName[bottomLangs[bottomLang]] }}
         .destination
           ScrollText(ref='destination')
-            span.from {{ data.departureName.ch }}
-            fa(icon='angle-right' style={margin: `0 .5rem`})
-            span.to {{ data.destinationName.ch }}
+            span.from {{ data.departureName[bottomLangs[bottomLang]] }}
+            fa(icon='angle-right' style={ margin: `0 .5rem` })
+            span.to {{ data.destinationName[bottomLangs[bottomLang]] }}
         .clock
           .item.weather(v-if='clock.weather')
             img.icon(:src='clock.weather.iconLink')
@@ -23,39 +23,48 @@
             h1(:ref='`mainStationText${key}`', :key='key', :class='key', v-for='(stop, key) in data.thisStop' v-show='getAllLangs(data.thisStop)[mainStationLang] == key')
               span(:style='getMainStationTextStyle(key)') {{ stop }}
       .ticket-info(hidden)
-        span
-          fa(icon='arrow-up')
-          |  上車收票
+        span #[fa(icon='arrow-up')] 上車收票
+
     template(v-else)
 
   //- 下方區塊
   #bottom
     template(v-if='data')
-      .route
+      .route(hidden)
         .bar(:style='routeBarStyle')
           .arrow(:style='routeBarArrowStyle')
-          span.text(:style='fontColorStyle') 分
+          span.text(:style='fontColorStyle')
+            span.en(v-if='bottomLangs[bottomLang] === `en`') min(s)
+            span.ch(v-else) 分
         ul.stations
           li(v-for='i in 7' :class='{passed: i == 1}')
-            .name(class='latin' v-if='bottomLangs[bottomLang] === `en`')
-              span {{ data.stations[i-1].en }}
-            .name( v-if='bottomLangs[bottomLang] === `ch`')
-              span {{ data.stations[i - 1].ch }}
+            .name(:class='{ latin: bottomLangs[bottomLang] === `en` }')
+              span {{ data.stations[i - 1][bottomLangs[bottomLang]] }}
             .time
               span.text
                 span(v-show='i != 1') {{ i }}
               span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
               ul #[li]
-      .spot
+      .spot(v-if='data')
+        h4 周邊資訊 / Information
+        .box
+          .row.list
+            .col-4.item(v-for='i in 12')
+              .row.align-items-center.no-gutters
+                .col-auto.icon
+                  fa(icon='coffee' v-if='i%2 == 0')
+                  fa(icon='question' v-else)
+                .col.text
+                  .ch 光華美食街{{ i }}
+                  .en Food Street
 
     template(v-else)
       .logo-banner
         img.logo(src='@/assets/img/logo-dark.svg')
 
   .marquee(v-if='isMarqueeShow')
-    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd')
-      | {{ i }}
+    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='0' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' hidden) {{ i }}
 </template>
 
 <script>
@@ -63,11 +72,13 @@ import colorDetector from '@/assets/js/colorDetector.js'
 import ScrollText from '@/components/Layout/ScrollText'
 import $ from 'jquery'
 
+const mainStationInterval = 4 * 1000
+const bottomInterval      = 12 * 1000
+
 export default {
   name: 'TokyoMetro',
   data () {
     return {
-
       routeBarTop: 0,
       destinationBoxStyle: {},
       destinationBoxOffset: 0,
@@ -83,27 +94,14 @@ export default {
       bottomTimer: null,
       //
       currMarquee: 0,
-      mainStationInterval: 4 * 1000,
-      bottomInterval: 10 * 1000,
     }
   },
   props:{
-    data: {
-      type: Object,
-      default: null
-    },
-    clock: {
-      type: Object,
-      default: null
-    },
-    ratio: {
-      type: Array,
-      default: null
-    },
-    marquee: {
-      type: Array,
-      default: null
-    }
+    data: { type: Object, default: null },
+    clock: { type: Object, default: null },
+    ratio: { type: Array, default: null },
+    marquee: { type: Array, default: null },
+    carousel: { type: Array, default: null },
   },
   components: {
     ScrollText,
@@ -118,7 +116,6 @@ export default {
     $(window).resize(() => {
       vm.setStyle()
     })
-
 },
   methods: {
     // 切換主要站名語言
@@ -147,21 +144,14 @@ export default {
       const transformValue = (textWidth > boxWidth) ? boxWidth / textWidth : 1
       return { transform: `scaleX(${transformValue})` }
     },
-    // 取得天氣圖片路徑
-    getWeatherIcon(text) {
-      const path = '/img/weather-icon/'
-      if(text.indexOf('多雲')>-1) return `${path}cloudy-1.svg`
-      if(text.indexOf('晴')>-1) return `${path}sun.svg`
-      if(text.indexOf('雷')>-1) return `${path}storm.svg`
-      if(text.indexOf('雨')>-1) return `${path}rain.svg`
-    },
     // 取得物件內所有語言。回傳 ['ch', 'en', ...]
     getAllLangs (obj) {
+      if(typeof obj !== 'object') return []
       return Object.keys(obj)
     },
     //　根據背景顏色取得字體顏色
     getFontColorByBg (color) {
-      return (colorDetector(color) == 'light') ? '#1e1e1e' : '#000'
+      return (colorDetector(color) === 'light') ? '#1e1e1e' : '#000'
     },
     // 設定各個元件的style數值
     setStyle () {
@@ -180,16 +170,16 @@ export default {
       this.mainStationLang = 0
       this.mainStationTimer = setInterval(() => {
         vm.toggleMainStationLang()
-      }, vm.mainStationInterval)
+      }, mainStationInterval)
     },
     resetBottomLang () {
       const vm = this
 
-      clearInterval(this.bottomLang)
+      clearInterval(this.bottomTimer)
       this.bottomLang = 0
       this.bottomTimer = setInterval(() => {
         vm.toggleBottomLang()
-      }, vm.bottomInterval)
+      }, bottomInterval)
     },
     // 當一條跑馬燈文字滾完後觸發，換到下一條文字
     marqueeEnd () {
@@ -220,6 +210,7 @@ export default {
       let reversedColor
       try{ reversedColor = this.getFontColorByBg(this.data.color) }
       catch(e){ reversedColor = '#fff' }
+
       return { color: reversedColor }
     },
     routeBarStyle () {
@@ -233,6 +224,7 @@ export default {
       return { borderColor: `transparent transparent transparent ${color}` }
     },
     isMarqueeShow () {
+      // return 0
       return this.marquee && this.marquee.length > 0
     }
   },
@@ -244,13 +236,17 @@ export default {
         this.destination = this.data.stations[0].ch
         this.resetMainStationLang()
       }
+    },
+    carousel () {
+      console.log(this.carousel)
     }
   },
   updated () {
     this.$nextTick(() => this.setStyle())
   },
   beforeDestroy () {
-
+    clearInterval(this.mainStationTimer)
+    clearInterval(this.bottomTimer)
   }
 }
 </script>

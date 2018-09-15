@@ -1,7 +1,7 @@
 <!--
 # 文字滾動器
 
-## 用法(pug)
+## 用法
 ```
 ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
   div Your Element Here
@@ -35,45 +35,21 @@ export default {
     return {
       innerText: null,
       offset: 0,
-      state: 0,    // 0: 滾動前, 1: 滾動中, 2: 結束滾動, 3: 不滾動
+      state: 0,             // 0: 滾動前, 1: 滾動中, 2: 結束滾動, 3: 不滾動
       startTimer: null,
       scrollingTimer: null,
       endTimer: null,
     }
   },
   props:{
-    pxPerSec: {
-      type: Number,
-      default: 100,
-    },
-    startDelay: {
-      type: Number,
-      default: 3,
-    },
-    endDelay: {
-      type: Number,
-      default: 10,
-    },
-    noScrollDelay: {
-      type: Number,
-      default: 5,
-    },
-    backgroundColor: {
-      type: String,
-      default: '#f2f2f2',
-    },
-    textStyle: {
-      type: Object,
-      default: () => { return {} }
-    },
-    marquee: {
-      type: Boolean,
-      default: false
-    },
-    forceScroll: {
-      type: Boolean,
-      default: false
-    },
+    pxPerSec: { type: Number, default: 100 },
+    startDelay: { type: Number, default: 2 },
+    endDelay: { type: Number, default: 10 },
+    noScrollDelay: { type: Number, default: 5 },
+    backgroundColor: { type: String, default: '#f2f2f2' },
+    textStyle: { type: Object, default: () => {} },
+    marquee: { type: Boolean, default: false },
+    forceScroll: { type: Boolean, default: false },
   },
   mounted () {
     this.start()
@@ -173,12 +149,8 @@ export default {
     }
   },
   updated () {
-    try{
-      this.innerText = (this.$refs.content.outerText)
-    }
-    catch(e){
-      this.innerText = ''
-    }
+    try{ this.innerText = (this.$refs.content.outerText) }
+    catch(e){ this.innerText = '' }
   },
   beforeDestroy() {
     clearInterval(this.startTimer)
