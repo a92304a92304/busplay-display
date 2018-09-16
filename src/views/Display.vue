@@ -4,6 +4,9 @@ main
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize')
 
   //- Debug 資訊
+  .debug.back(v-if='debugMode')
+    router-link.text-light(to='/') #[fa(icon='arrow-circle-left' size='4x')]
+
   .debug.img(v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
 
@@ -16,24 +19,25 @@ main
             td 距下 {{ i.distance }}m
 
   .debug.current(v-if='debugMode && route')
-    div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} - {{ route.current.prevDistance }}m
-    div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} - {{ route.current.nextMinDistance }}m
+    div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
+    div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
     .text-light(v-if='position')
       div #[span.badge.badge-light lat] {{ position.latitude }}
       div #[span.badge.badge-light lng] {{ position.longitude }}
       div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
 
   .debug.btn(v-if='debugMode')
-    .btn-group.btn-group-sm
+    .btn-group.btn-group-sm.mb-1
       button.btn.btn-primary(@click='setRatio()') 16:9
       button.btn.btn-primary(@click='setRatio(4,3)') 4:3
       button.btn.btn-dark(@click='enterFullScreen()') 全屏
+    .btn-group.btn-group-sm
+      button.btn.btn-primary(@click='current--') #[fa(icon='angle-left')]
+      button.btn.btn-primary(@click='current++') #[fa(icon='angle-right')]
     br
     .btn-group.btn-group-sm
-      button.btn.btn-danger(@click='current--') #[fa(icon='angle-left')]
-      button.btn.btn-danger(@click='current++') #[fa(icon='angle-right')]
-      button.btn.btn-secondary(@click='toggleTransition()') toggle transition
-      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') toggle btm
+      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
+      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
       button.btn.btn-warning(@click='initRoute()') reset route
 </template>
 
@@ -140,7 +144,7 @@ export default {
     setCarousel () {
       const vm = this
       const info = vm.route.stations[this.current].info
-      const duration = 8000
+      const duration = 7000
       this.carousels.length = 0 // 清空輪播訊息陣列
 
       if (info.spot.length) {
@@ -150,6 +154,21 @@ export default {
           duration,
         })
       }
+      vm.carousels.push({
+        type: `ad`,
+        content: {
+          title: {
+            ch: `乘車注意事項`,
+            en: `Notice`,
+          },
+          content: {
+            ch: `為了維護服務品質，請勿在車內吸煙、飲食、嚼食口香糖或檳榔，謝謝您的配合，祝您旅途愉快。`,
+            en: `Please do not smoke, eat, drink, chew gum or betel nut in the car. Have a nice trip.`
+          },
+          img: null
+        },
+        duration: 5000,
+      })
     },
     initRoute () {
       route.initNewRoute(this.route)
@@ -168,7 +187,7 @@ export default {
       const vm = this
       gps.getPosition().then((position) => {
         const url = `https://busplay-server.herokuapp.com/weather/${position.latitude}&${position.longitude}`
-        console.log(url)
+
         $.get(url, weather => {
           if(weather.success) vm.clock.weather = weather.data
         })
@@ -189,6 +208,34 @@ export default {
   },
   mixins: [display]
 }
+
+const iconList = [
+  { name: `地標 (default)`, icon: `map-marker` },
+  { name: `商場`, icon: `shopping-cart` },
+  { name: `店家`, icon: `store` },
+  { name: `學校`, icon: `school` },
+  { name: `大學`, icon: `university` },
+  { name: `餐廳`, icon: `utensils` },
+  { name: `服飾`, icon: `tshirt` },
+  { name: `森林`, icon: `tree` },
+  { name: `劇院`, icon: `theater-masks` },
+  { name: `桌遊`, icon: `chess` },
+  { name: `咖啡廳`, icon: `coffee` },
+  { name: `醫院`, icon: `hospital` },
+  { name: `建築`, icon: `building` },
+  { name: `旅店`, icon: `hotel` },
+  { name: `銀行`, icon: `dollar-sign` },
+  { name: `機場`, icon: `plane-departure` },
+  { name: `酒館`, icon: `wine-glass` },
+  { name: `館院廳`, icon: `landmark` },
+  { name: `廟宇`, icon: `vihara` },
+  { name: `港口`, icon: `ship` },
+  { name: `火車`, icon: `train` },
+  { name: `地鐵`, icon: `subway` },
+  { name: `客運`, icon: `bus-alt` },
+  { name: `計程車`, icon: `taxi` },
+  { name: `台北捷運`, icon: `mrt`, custom: true },
+]
 </script>
 
 <style scoped lang="sass">
@@ -219,6 +266,9 @@ main
   position: absolute
   opacity: .9
   padding: .5rem
+  &.back
+    left: 1rem
+    top: 1rem
   &.img
     bottom: 0
     left: 0

@@ -65,9 +65,6 @@ const display = {
       this.ratio = [w, h]
       this.setWidthHeight()
     },
-    toggleTransition () {
-      this.$refs.TokyoMetro.toggleTransition()
-    },
   },
   computed: {
     areaStyle () {
@@ -79,6 +76,7 @@ const display = {
   },
   beforeDestroy () {
     this.stopGps()
+    $(window).unbind()
   }
 }
 

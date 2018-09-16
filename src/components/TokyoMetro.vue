@@ -7,7 +7,7 @@
         .bus-name
           h2(:style='busNameStyle') {{ data.routeName[bottomLangs[bottomLang]] }}
         .destination
-          ScrollText(ref='destination' :htmlFontSize='htmlFontSize')
+          ScrollText(ref='destination' :remPerSec='5' :htmlFontSize='htmlFontSize')
             span.from {{ data.departureName[bottomLangs[bottomLang]] }}
             fa(icon='angle-right' style={ margin: `0 .5rem` })
             span.to {{ data.destinationName[bottomLangs[bottomLang]] }}
@@ -49,18 +49,29 @@
 
       template(v-else)
         //- 景點
-        .spot
-          h4.headline-enter-active(:style='{ borderColor: data.color }') 周邊資訊 / Information
+        .spot(v-if='carousels[carousel - 1].type === `spot`')
+          h4.headline-enter(:style='{ borderColor: data.color }') 周邊資訊 / Information
           .box
             .row.list
               .col-auto.item(v-for='(i, index) in getCarouselContent(carousel - 1)' :key='index' :style='{ animationDelay: `${0.1 + index * 0.05}s` }')
                 .row.align-items-center.no-gutters
-                  .col-auto.icon.icon-enter-active(:style='{ animationDelay: `${index * 0.07}s` }')
+                  .col-auto.icon.icon-enter(:style='{ animationDelay: `${index * 0.07}s` }')
                     img(src='@/assets/img/icon/mrt.svg' v-if='i.icon === `mrt`')
                     fa(:icon='i.icon' v-else)
-                  .col.text.text-enter-active(:style='{ animationDelay: `${0.1 + index * 0.07}s` }')
+                  .col.text.text-enter(:style='{ animationDelay: `${0.1 + index * 0.07}s` }')
                     .ch {{ i.name.ch }}
                     .en {{ i.name.en }}
+
+
+        .ad(v-if='carousels[carousel - 1].type === `ad`')
+          h4.headline-enter(:style='{ borderColor: data.color }') {{ getCarouselContent(carousel - 1).title.ch }} / {{ getCarouselContent(carousel - 1).title.en }}
+          .content.text-enter(style={ animationDelay: `.15s` })
+            .row.align-items-center
+              .col
+                p.ch(v-html='getCarouselContent(carousel - 1).content.ch')
+                p.en(v-html='getCarouselContent(carousel - 1).content.en')
+              .col-3.img-enter(v-if='1')
+                img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png')
 
     template(v-else)
       .logo-banner
@@ -76,7 +87,7 @@ import ScrollText from '@/components/ScrollText'
 import $ from 'jquery'
 
 const mainStationInterval =  4 * 1000   // 主車站更換語言間隔
-const bottomInterval      = 12 * 1000   // 底部更換語言間隔
+const bottomInterval      = 10 * 1000   // 底部更換語言間隔
 const routeDuration       = 20 * 1000   // 顯示路線的維持時間
 
 export default {

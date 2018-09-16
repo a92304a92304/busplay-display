@@ -42,7 +42,7 @@ export default {
     }
   },
   props:{
-    remPerSec: { type: Number, default: 5 },
+    remPerSec: { type: Number, default: 3 },
     startDelay: { type: Number, default: 2 },
     endDelay: { type: Number, default: 10 },
     noScrollDelay: { type: Number, default: 5 },
