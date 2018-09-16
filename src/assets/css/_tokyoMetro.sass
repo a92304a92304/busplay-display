@@ -81,7 +81,7 @@ h1, h2, h3, h4, h5, h6, span
       +mx(.25rem)
       +item-style
     .time
-      font-family: Courier, 'Lucida Console', Monaco
+      // font-family: Courier, 'Lucida Console', Monaco
     .weather
       display: flex
       flex-direction: row
@@ -327,10 +327,32 @@ $main-station-font-size: 4rem
   to
     transform: none
 
+@keyframes icon-in
+  from
+    opacity: 0
+    transform: scale(.8)
+  to
+    transform: none
+
+@keyframes text-in
+  from
+    opacity: 0
+    transform: translateX(-.5rem)
+  to
+    transform: none
+
 .headline-enter-active
   animation: fade-in .5s
   animation-fill-mode: backwards
 
 .item-enter-active
   animation: move-in .5s
+  animation-fill-mode: backwards
+
+.icon-enter-active
+  animation: icon-in .5s
+  animation-fill-mode: backwards
+
+.text-enter-active
+  animation: text-in .5s
   animation-fill-mode: backwards

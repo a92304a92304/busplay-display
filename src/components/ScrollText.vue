@@ -42,7 +42,7 @@ export default {
     }
   },
   props:{
-    pxPerSec: { type: Number, default: 100 },
+    remPerSec: { type: Number, default: 5 },
     startDelay: { type: Number, default: 2 },
     endDelay: { type: Number, default: 10 },
     noScrollDelay: { type: Number, default: 5 },
@@ -50,6 +50,7 @@ export default {
     textStyle: { type: Object, default: () => {} },
     marquee: { type: Boolean, default: false },
     forceScroll: { type: Boolean, default: false },
+    htmlFontSize: { type: Number, default: 12 },
   },
   mounted () {
     this.start()
@@ -142,6 +143,9 @@ export default {
         transform: `translateX(${distance}px)`,
       }
     },
+    pxPerSec () {
+      return this.remPerSec * this.htmlFontSize
+    }
   },
   watch: {
     innerText () {

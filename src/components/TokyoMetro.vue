@@ -1,9 +1,5 @@
 <template lang="pug">
 #tokyo-metro(ref='tokyoMetro')
-  //- Debug 用
-  .position-absolute(style={top:0,left:0,height:`300px`,width:`300px`,zIndex:9999})
-    //- .text-danger carousel {{ carousel }}
-
   //- 上方區塊
   #top(ref='top' :style='topStyle')
     template(v-if='data')
@@ -11,7 +7,7 @@
         .bus-name
           h2(:style='busNameStyle') {{ data.routeName[bottomLangs[bottomLang]] }}
         .destination
-          ScrollText(ref='destination')
+          ScrollText(ref='destination' :htmlFontSize='htmlFontSize')
             span.from {{ data.departureName[bottomLangs[bottomLang]] }}
             fa(icon='angle-right' style={ margin: `0 .5rem` })
             span.to {{ data.destinationName[bottomLangs[bottomLang]] }}
@@ -20,7 +16,7 @@
             img.icon(:src='clock.weather.iconLink')
             span.text {{ parseInt(clock.weather.temperature) }}°C
           .item.time
-            | {{clock.time}}
+            span {{clock.time}}
       .main-station
         .box(ref='mainStationBox')
           transition-group(:name='transitions[transition]')
@@ -50,17 +46,19 @@
               span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
               ul #[li]
+
       template(v-else)
+        //- 景點
         .spot
           h4.headline-enter-active(:style='{ borderColor: data.color }') 周邊資訊 / Information
           .box
             .row.list
-              .col-auto.item.item-enter-active(v-for='(i, index) in getCarouselContent(carousel - 1)' :key='index' :style='{ animationDelay: `${0.1 + index * 0.05}s` }')
+              .col-auto.item(v-for='(i, index) in getCarouselContent(carousel - 1)' :key='index' :style='{ animationDelay: `${0.1 + index * 0.05}s` }')
                 .row.align-items-center.no-gutters
-                  .col-auto.icon
+                  .col-auto.icon.icon-enter-active(:style='{ animationDelay: `${index * 0.07}s` }')
                     img(src='@/assets/img/icon/mrt.svg' v-if='i.icon === `mrt`')
                     fa(:icon='i.icon' v-else)
-                  .col.text
+                  .col.text.text-enter-active(:style='{ animationDelay: `${0.1 + index * 0.07}s` }')
                     .ch {{ i.name.ch }}
                     .en {{ i.name.en }}
 
@@ -69,7 +67,7 @@
         img.logo(src='@/assets/img/logo-dark.svg')
 
   .marquee(v-if='isMarqueeShow')
-    ScrollText(ref='marquee' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
+    ScrollText(ref='marquee' :htmlFontSize='htmlFontSize' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
 </template>
 
 <script>
@@ -79,7 +77,7 @@ import $ from 'jquery'
 
 const mainStationInterval =  4 * 1000   // 主車站更換語言間隔
 const bottomInterval      = 12 * 1000   // 底部更換語言間隔
-const routeDuration       = 10 * 1000   // 顯示路線的維持時間
+const routeDuration       = 20 * 1000   // 顯示路線的維持時間
 
 export default {
   name: 'TokyoMetro',
@@ -110,6 +108,7 @@ export default {
     ratio: { type: Array, default: null },
     marquee: { type: Array, default: null },
     carousels: { type: Array, default: null },
+    htmlFontSize: { type: Number, default: 12 },
   },
   components: {
     ScrollText,
@@ -160,7 +159,7 @@ export default {
     },
     //　根據背景顏色取得字體顏色
     getFontColorByBg (color) {
-      return (colorDetector(color) === 'light') ? '#1e1e1e' : '#000'
+      return (colorDetector(color) === 'light') ? '#1e1e1e' : '#fff'
     },
     // 設定各個元件的style數值
     setStyle () {
@@ -202,6 +201,10 @@ export default {
         return []
       }
     },
+    toggleCarousel () {
+      const length = this.carousels.length  // 輪播訊息總數量
+      this.carousel = ((this.carousel + 1) + (length + 1)) % (length + 1) // 切換到下一則輪播訊息
+    },
     setCarousel () {
       const vm = this
       const length = vm.carousels.length  // 輪播訊息總數量
@@ -210,7 +213,7 @@ export default {
       if (length === 0) {   // 若無輪播訊息
         vm.carousel = 0     // 將當前輪播訊息設定為 0，即預設值顯示路線
       } else {
-        vm.carousel = ((vm.carousel + 1) + (length + 1)) % (length + 1) // 切換到下一則輪播訊息
+        vm.toggleCarousel()
         duration = (vm.carousel == 0)   // 播放的持續時間，若本則訊息為`路線`:
           ? routeDuration   // 設為路線畫面固定的持續時間
           : vm.carousels[vm.carousel - 1].duration  // 設為各則訊息的持續時間

@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle' @click.stop='debugMode = !debugMode')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize')
 
   //- Debug 資訊
   .debug.img(v-if='debugMode')
@@ -16,9 +16,12 @@ main
             td 距下 {{ i.distance }}m
 
   .debug.current(v-if='debugMode && route')
-    div 前 [{{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }}, {{ route.current.prevDistance }}m
-    div 下 [{{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }}, {{ route.current.nextMinDistance }}m
-    .text-light lat:{{ position.latitude }} #[br] lng:{{ position.longitude }} #[br] acc:{{ position.accuracy }}
+    div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} - {{ route.current.prevDistance }}m
+    div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} - {{ route.current.nextMinDistance }}m
+    .text-light(v-if='position')
+      div #[span.badge.badge-light lat] {{ position.latitude }}
+      div #[span.badge.badge-light lng] {{ position.longitude }}
+      div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
 
   .debug.btn(v-if='debugMode')
     .btn-group.btn-group-sm
@@ -30,6 +33,7 @@ main
       button.btn.btn-danger(@click='current--') #[fa(icon='angle-left')]
       button.btn.btn-danger(@click='current++') #[fa(icon='angle-right')]
       button.btn.btn-secondary(@click='toggleTransition()') toggle transition
+      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') toggle btm
       button.btn.btn-warning(@click='initRoute()') reset route
 </template>
 
@@ -49,7 +53,7 @@ export default {
   name: 'Display',
   data () {
     return {
-      debugMode: false,     // 是否顯示debug panel
+      debugMode: true,     // 是否顯示debug panel
       position: null,      // 當前 gps 資訊
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存gps timer的id
@@ -73,6 +77,7 @@ export default {
     vm.fetchRoute(routeId).then(() => {
       vm.startGps()
     })
+    console.log(  this.$refs.TokyoMetro)
 
   },
   methods: {
@@ -80,10 +85,9 @@ export default {
     setTime () {
       const h = moment().format('HH')
       const m = moment().format('mm')
-      const s = moment().format('ss')
-      this.clock.time = (s % 2 == 0) ? `${h}:${m}` : `${h} ${m}`
+      this.clock.time = `${h}:${m}`
 
-      this.clockTimer = setTimeout(this.setTime, 1000)
+      this.clockTimer = setTimeout(this.setTime, 10000)
     },
     // 開始定時取得GPS
     startGps () {

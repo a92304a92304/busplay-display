@@ -1,7 +1,7 @@
 const $ = require('jquery')
 const gps = require('./gps')
 
-const distanceOffset = 30
+const distanceOffset = 50
 
 const fetchRoute = (id) => {
   return new Promise((resolve, reject) => {
@@ -79,12 +79,17 @@ const setCurrent = (data, position) => {
       data.current.nextMinDistance = nextNewDistance
     } else {
       // 已遠離下一站: 設定該站為passed, `下一站index`++, 重設`與下一站的最小距離`
-      data.stations[nextIndex].passed = true
-      data.current.nextIndex++
-      data.current.nextMinDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.nextIndex])
+      if (data.current.nextIndex + 1 < stationsForCalc.length) {
+        data.stations[nextIndex].passed = true
+        data.current.nextIndex++
+        data.current.nextMinDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.nextIndex])
+      } else {
+        // 已超越終點站
+      }
     }
     data.current.prevIndex = data.current.nextIndex - 1
     data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
+
     resolve(data)
   })
 }
