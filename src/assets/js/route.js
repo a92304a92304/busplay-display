@@ -8,11 +8,8 @@ const fetchRoute = (id, direction = `go`) => {
   if (id === `demo`)
     return new Promise((resolve, reject) => {
       const data = Object.assign({}, demoRoute.route)
-      
-      data.stations = data.stations[direction] || []  // 取返程或去程
 
-      initNewRoute(data).then(() => {
-        initNewRoute(data)
+      initNewRoute(data, direction).then(() => {
         resolve(data)
       })
     })
@@ -24,10 +21,7 @@ const fetchRoute = (id, direction = `go`) => {
         type: 'GET',
         dataType: 'json',
         success: data => {
-          data.stations = data.stations[direction] || []  // 取返程或去程
-
-          initNewRoute(data).then(() => {
-            initNewRoute(data)
+          initNewRoute(data, direction).then(() => {
             resolve(data)
             console.log(data)
           })
@@ -38,7 +32,12 @@ const fetchRoute = (id, direction = `go`) => {
 }
 
 // 處理新建立的路線(初始化)
-const initNewRoute = (data) => {
+const initNewRoute = (data, direction = `go`) => {
+  data.stations = data.stations[direction] || []  // 取返程或去程之路線資料
+
+  if (direction === `back`)   // 若為返程，交換起訖站名
+    [data.departureName, data.destinationName] = [data.destinationName, data.departureName] // 以解構交換
+
   return new Promise((resolve, reject) => {
     const stations = data.stations
 
