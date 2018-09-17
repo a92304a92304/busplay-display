@@ -58,20 +58,26 @@
                   .col-auto.icon.icon-enter(:style='{ animationDelay: `${index * 0.07}s` }')
                     img(src='@/assets/img/icon/mrt.svg' v-if='i.icon === `mrt`')
                     fa(:icon='i.icon' v-else)
-                  .col.text.text-enter(:style='{ animationDelay: `${0.1 + index * 0.07}s` }')
+                  .col.text.fade-in-left(:style='{ animationDelay: `${0.1 + index * 0.07}s` }')
                     .ch {{ i.name.ch }}
                     .en {{ i.name.en }}
+        //- 廣告(輪播)
+        .ad(v-for='(i, index) in carousels' :key='index' v-if='index === carousel - 1 && carousels[carousel - 1].type === `ad`')
+          //- 僅圖片的輪播
+          .ad-img(v-if='!getCarouselContent(index).title.ch')
+            img.fade-in-left(:src='getCarouselContent(index).img' :key='getCarouselContent(index).img')
+              
+          //- 有圖片和文字的輪播
+          .ad-text(v-else-if='index === carousel - 1')
+            h4.fade-in-left(:style='{ borderColor: data.color }') {{ getCarouselContent(index).title.ch }} / {{ getCarouselContent(index).title.en }}
+            .content.fade-in-left(style={ animationDelay: `.15s` })
+              .row.align-items-center
+                .col
+                  p.ch(v-html='getCarouselContent(index).content.ch')
+                  p.en(v-html='getCarouselContent(index).content.en')
+                .col-auto.img-enter(v-if='getCarouselContent(index).img')
+                  img(:src='getCarouselContent(index).img')
 
-
-        .ad(v-if='carousels[carousel - 1].type === `ad`')
-          h4.headline-enter(:style='{ borderColor: data.color }') {{ getCarouselContent(carousel - 1).title.ch }} / {{ getCarouselContent(carousel - 1).title.en }}
-          .content.text-enter(style={ animationDelay: `.15s` })
-            .row.align-items-center
-              .col
-                p.ch(v-html='getCarouselContent(carousel - 1).content.ch')
-                p.en(v-html='getCarouselContent(carousel - 1).content.en')
-              .col-3.img-enter(v-if='1')
-                img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png')
 
     template(v-else)
       .logo-banner
@@ -214,7 +220,12 @@ export default {
     },
     toggleCarousel () {
       const length = this.carousels.length  // 輪播訊息總數量
-      this.carousel = ((this.carousel + 1) + (length + 1)) % (length + 1) // 切換到下一則輪播訊息
+      try {
+        this.carousel = ((this.carousel + 1) + (length + 1)) % (length + 1) // 切換到下一則輪播訊息
+      }
+      catch(e){
+        this.carousel = 0
+      }
     },
     setCarousel () {
       const vm = this
@@ -224,7 +235,7 @@ export default {
       if (length === 0) {   // 若無輪播訊息
         vm.carousel = 0     // 將當前輪播訊息設定為 0，即預設值顯示路線
       } else {
-        vm.toggleCarousel()
+        vm.toggleCarousel()             // 切換輪播訊息
         duration = (vm.carousel == 0)   // 播放的持續時間，若本則訊息為`路線`:
           ? routeDuration   // 設為路線畫面固定的持續時間
           : vm.carousels[vm.carousel - 1].duration  // 設為各則訊息的持續時間
@@ -283,14 +294,11 @@ export default {
         this.resetMainStationLang()
       }
     },
-    carousel () {
-    },
-    // carouselContentText () {
-    //   console.log(`偵測輪播發生變動`,this.carouselContentText)
-    //   clearInterval(this.carouselTimer)
-    //   this.carousel = 0
-    //   this.setCarousel()
-    // }
+    carouselContentText () {
+      clearInterval(this.carouselTimer)
+      this.carousel = 0
+      this.setCarousel()
+    }
   },
   updated () {
     this.$nextTick(() => this.setStyle())

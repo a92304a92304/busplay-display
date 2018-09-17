@@ -43,8 +43,10 @@ h1, h2, h3, h4, h5, h6, span
     border-bottom: .5rem solid #1e1e1e
     +box-shadow
     height: 35%
+    z-index: 1000
   #bottom
     height: 65%
+    z-index: 500
 
 .bus-info
   white-space: nowrap
@@ -272,10 +274,11 @@ $main-station-font-size: 4rem
     height: 30%
     width: auto
 
-
+.spot
+  padding: 1rem
+  
 .spot, .ad
   height: 100%
-  padding: 1rem
   h4
     border-left: solid #1e1e1e .5rem
     padding-left: .5rem
@@ -297,7 +300,6 @@ $main-station-font-size: 4rem
     margin-bottom: .4rem
     .icon
       font-size: 1.5rem
-      // min-width: 2.8rem
       margin-right: .7rem
       text-align: center
       img
@@ -311,26 +313,32 @@ $main-station-font-size: 4rem
         font-size: .8rem
 
 .ad
-  .content
-    height: calc(100% - 4.5rem)
+  .ad-img
     display: flex
-    align-items: center
-    padding: 0 1rem
-    .ch
-      font-size: 1rem
-    .en
-      font-size: .9rem
-  img
-    width: 100%
-    height: auto
+    height: 100%
+    justify-content: center
+    align-items: flex-start
+    img
+      object-fit: contain
+      height: calc(100% - 1.5rem)
+      width: 100%
 
-@keyframes fade-in
-  from
-    opacity: 0
-    transform: translateX(-1rem)
-  to
-    transform: none
-
+  .ad-text
+    height: 100%
+    padding: 1rem
+    .content
+      height: calc(100% - 4.5rem)
+      display: flex
+      align-items: center
+      padding: 0 1rem
+      .ch
+        font-size: 1rem
+      .en
+        font-size: .9rem
+    img
+      width: auto
+      max-width: 12rem
+      height: auto
 
 @keyframes move-in
   from
@@ -346,24 +354,27 @@ $main-station-font-size: 4rem
   to
     transform: none
 
-@keyframes text-in
+@keyframes fade-in-left
   from
     opacity: 0
-    transform: translateX(-.5rem)
+    transform: translateX(-1rem)
   to
     transform: none
 
-@keyframes img-in
+@keyframes zoom-in
   from
     opacity: 0
     transform: scale(1.1)
   to
     transform: none
 
+@keyframes zoom-out
+  from
+    opacity: 0
+    transform: scale(.95)
+  to
+    transform: none
 
-.headline-enter
-  animation: fade-in .5s
-  animation-fill-mode: backwards
 
 .item-enter
   animation: move-in .5s
@@ -373,11 +384,15 @@ $main-station-font-size: 4rem
   animation: icon-in .5s
   animation-fill-mode: backwards
 
-.text-enter
-  animation: text-in .5s
+.fade-in-left
+  animation: fade-in-left .5s
   animation-fill-mode: backwards
 
 .img-enter
-  animation: img-in .5s
+  animation: zoom-in .5s
   animation-delay: .3s
+  animation-fill-mode: backwards
+
+.ad-img-enter
+  animation: zoom-out .5s
   animation-fill-mode: backwards

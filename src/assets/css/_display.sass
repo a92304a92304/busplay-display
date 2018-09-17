@@ -1,0 +1,63 @@
+@import "~bootswatch/dist/lux/variables"
+@import "~bootstrap/scss/bootstrap"
+@import "~bootswatch/dist/lux/bootswatch"
+
+main
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100%
+
+#display-area
+  overflow: hidden
+  border: 1px solid $gray-300
+
+.test
+  border: 1px solid $gray-300
+  width: 50%
+
+.debug
+  background-color: rgba(black, .9)
+  font-size: .7rem
+  color: white
+  z-index: 9999
+  overflow: hidden
+  position: absolute
+  opacity: .9
+  padding: .5rem
+  &.back
+    left: 1rem
+    top: 1rem
+  &.img
+    bottom: 0
+    left: 0
+    height: 300px
+    width: 300px
+    padding: 0
+    margin: 0
+  &.stations
+    position: absolute
+    top: 0
+    right: 0
+    width: 15rem
+    .list
+      height: 10rem
+      overflow: scroll
+      table
+        tr
+          &.active
+            background-color: $yellow
+          &.passed
+            background-color: rgba($yellow, .5)
+        td
+          padding: 0 .2rem
+
+  &.current
+    top: 0
+    right: calc(15rem + .5rem)
+    color: $yellow
+
+  &.btn
+    bottom: 1rem
+    right: 1rem
+    text-align: left

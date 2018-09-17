@@ -19,7 +19,9 @@ section
               fa.mr-2(icon='angle-right')
               span {{ route.destination.ch }}
               small(v-if='route.destination.hasOwnProperty(`en`)') {{ route.destination.en }}
-
+          //- .col-auto
+            button.btn.btn-dark 去
+            button.btn.btn-dark 返
   .text-center(v-if='routes')
     button.btn.btn-outline-secondary.my-3(@click='gotoTop()')
       fa.mx-5(icon='caret-up' size="2x")

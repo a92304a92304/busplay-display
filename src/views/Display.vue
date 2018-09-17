@@ -81,8 +81,6 @@ export default {
     vm.fetchRoute(routeId).then(() => {
       vm.startGps()
     })
-    console.log(  this.$refs.TokyoMetro)
-
   },
   methods: {
     // 設定當前時間
@@ -154,6 +152,20 @@ export default {
           duration,
         })
       }
+
+      const testAdImg = [`https://i.imgur.com/WEJUNI5.jpg`, `https://i.imgur.com/qcMD0zD.jpg`, `https://i.imgur.com/QZ7z7ao.jpg`]
+      testAdImg.forEach((img) => {
+        vm.carousels.push({
+          type: `ad`,
+          content: {
+            title: { ch: null, en: null },
+            content: { ch: null, en: null },
+            img
+          },
+          duration: 5000,
+        })
+      })
+
       vm.carousels.push({
         type: `ad`,
         content: {
@@ -165,7 +177,22 @@ export default {
             ch: `為了維護服務品質，請勿在車內吸煙、飲食、嚼食口香糖或檳榔，謝謝您的配合，祝您旅途愉快。`,
             en: `Please do not smoke, eat, drink, chew gum or betel nut in the car. Have a nice trip.`
           },
-          img: null
+          img: `https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png`
+        },
+        duration: 5000,
+      })
+      vm.carousels.push({
+        type: `ad`,
+        content: {
+          title: {
+            ch: `博愛座`,
+            en: `Priority Seat`,
+          },
+          content: {
+            ch: `請優先讓位給老人、孕婦、行動不便者，及抱小孩的乘客。`,
+            en: `Priority to senior citizen, pregnant and passenger who is disabled or with child.`
+          },
+          img: `http://img.ltn.com.tw/Upload/liveNews/BigPic/600_phpDuXdFZ.jpg`
         },
         duration: 5000,
       })
@@ -208,98 +235,8 @@ export default {
   },
   mixins: [display]
 }
-
-const iconList = [
-  { name: `地標 (default)`, icon: `map-marker` },
-  { name: `商場`, icon: `shopping-cart` },
-  { name: `店家`, icon: `store` },
-  { name: `學校`, icon: `school` },
-  { name: `大學`, icon: `university` },
-  { name: `餐廳`, icon: `utensils` },
-  { name: `服飾`, icon: `tshirt` },
-  { name: `森林`, icon: `tree` },
-  { name: `劇院`, icon: `theater-masks` },
-  { name: `桌遊`, icon: `chess` },
-  { name: `咖啡廳`, icon: `coffee` },
-  { name: `醫院`, icon: `hospital` },
-  { name: `建築`, icon: `building` },
-  { name: `旅店`, icon: `hotel` },
-  { name: `銀行`, icon: `dollar-sign` },
-  { name: `機場`, icon: `plane-departure` },
-  { name: `酒館`, icon: `wine-glass` },
-  { name: `館院廳`, icon: `landmark` },
-  { name: `廟宇`, icon: `vihara` },
-  { name: `港口`, icon: `ship` },
-  { name: `火車`, icon: `train` },
-  { name: `地鐵`, icon: `subway` },
-  { name: `客運`, icon: `bus-alt` },
-  { name: `計程車`, icon: `taxi` },
-  { name: `台北捷運`, icon: `mrt`, custom: true },
-]
 </script>
 
 <style scoped lang="sass">
-@import "~bootswatch/dist/lux/variables"
-@import "~bootstrap/scss/bootstrap"
-@import "~bootswatch/dist/lux/bootswatch"
-
-main
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 100%
-
-#display-area
-  overflow: hidden
-  border: 1px solid $gray-300
-
-.test
-  border: 1px solid $gray-300
-  width: 50%
-
-.debug
-  background-color: rgba(black, .9)
-  font-size: .7rem
-  color: white
-  z-index: 9999
-  overflow: hidden
-  position: absolute
-  opacity: .9
-  padding: .5rem
-  &.back
-    left: 1rem
-    top: 1rem
-  &.img
-    bottom: 0
-    left: 0
-    height: 300px
-    width: 300px
-    padding: 0
-    margin: 0
-  &.stations
-    position: absolute
-    top: 0
-    right: 0
-    width: 15rem
-    .list
-      height: 10rem
-      overflow: scroll
-      table
-        tr
-          &.active
-            background-color: $yellow
-          &.passed
-            background-color: rgba($yellow, .5)
-        td
-          padding: 0 .2rem
-
-  &.current
-    top: 0
-    right: calc(15rem + .5rem)
-    color: $yellow
-
-  &.btn
-    bottom: 1rem
-    right: 1rem
-    text-align: left
+@import "../assets/css/display"
 </style>
