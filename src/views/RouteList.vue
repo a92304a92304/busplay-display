@@ -3,18 +3,22 @@ section
   //- demo 用
   h4.text-light 演示路線
   .card.item.mb-5
-    router-link.card-body(:to='`/display/demo`')
+    .card-body(@click.stop='gotoRoute(`demo`)')
       .row.align-items-center
         .col-auto.text-center #[.name {{ demoRoute.routeName.ch }}] #[span {{ demoRoute.routeName.en }}]
         .col
           .departure #[fa.mr-2(icon='map-marker' size="xs")] #[span {{ demoRoute.departureName.ch }}] #[small {{ demoRoute.departureName.en }}]
           .destination #[fa.mr-2(icon='angle-right')] #[span {{ demoRoute.destinationName.ch }}] #[small {{ demoRoute.destinationName.en }}]
-          
+        .col-auto
+          .btn-group
+            button.btn.btn-primary.border-right(@click.stop='gotoRoute(`demo`, `go`)') 去程
+            button.btn.btn-primary(@click.stop='gotoRoute(`demo`, `back`)') 返程
+
   h4.text-light 線上路線列表
   .loading(v-if='!routes') #[fa(icon='spinner' spin)]
   transition-group(name='fade')
     .card.item.mb-2(v-for='(route, index) in routes' v-if='routes' :key='index' :style='{ borderLeftColor: route.color, animationDelay: `${index * 0.05}s` }')
-      router-link.card-body(:to='`/display/${route.id}`')
+      .card-body(@click.stop='gotoRoute(route.id)')
         .row.align-items-center
           .col-auto.text-center
             .name {{ route.name.ch }}
@@ -28,9 +32,10 @@ section
               fa.mr-2(icon='angle-right')
               span {{ route.destination.ch }}
               small(v-if='route.destination.hasOwnProperty(`en`)') {{ route.destination.en }}
-          //- .col-auto
-            button.btn.btn-dark 去
-            button.btn.btn-dark 返
+          .col-auto
+            .btn-group
+              button.btn.btn-primary.border-right(@click.stop='gotoRoute(route.id, `go`)') 去程
+              button.btn.btn-primary(@click.stop='gotoRoute(route.id, `back`)') 返程
   .text-center(v-if='routes')
     button.btn.btn-outline-secondary.my-3(@click='gotoTop()')
       fa.mx-5(icon='caret-up' size="2x")
@@ -57,6 +62,9 @@ export default {
       const url = `https://busplay-server.herokuapp.com/AllRouteXQ/`
       $.get(url, list => this.routes = list )
     },
+    gotoRoute (id, direction = `go`) {
+      this.$router.push(`/display/${id}?direction=${direction}`)
+    },
     gotoTop () {
       document.body.scrollTop = 0
       document.documentElement.scrollTop = 0
@@ -78,11 +86,14 @@ export default {
 .item
   border-left: .5rem solid #bbb
   text-align: left
+
   .card-body
     display: block
     &:hover
       background-color: $gray-300
       text-decoration: none
+      cursor: pointer
+
   .name
     font-size: 2rem
     font-weight: 900

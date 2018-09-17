@@ -212,6 +212,7 @@ export default {
       const length = this.marquee.length
       this.currMarquee = ((this.currMarquee + 1) + length) % length
     },
+    // 取得第 n 個輪播的內容
     getCarouselContent (index) {
       try {
         return (index <= this.carousels.length) ? this.carousels[index].content : []

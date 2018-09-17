@@ -79,8 +79,9 @@ export default {
     vm.setTime()
     vm.fetchWeather()
     vm.setWindow()
+    vm.setDirection()
 
-    vm.fetchRoute(routeId).then(() => {   // 取得路線 data
+    vm.fetchRoute(routeId, this.direction).then(() => {   // 取得路線 data
       vm.startGps()
     })
 
@@ -204,9 +205,9 @@ export default {
     initRoute () {
       route.initNewRoute(this.route)
     },
-    fetchRoute (id) {
+    fetchRoute (id, direction = `go`) {
       return new Promise((resolve, reject) => {
-        route.fetchRoute(id).then(val => {
+        route.fetchRoute(id, direction).then(val => {
           this.route = val
           this.marquee = val.marquee
           resolve()

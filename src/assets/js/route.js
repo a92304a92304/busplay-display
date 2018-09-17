@@ -4,33 +4,37 @@ const demoRoute = require('./demoRoute')
 
 const distanceOffset = 50
 
-const fetchRoute = (id) => {
+const fetchRoute = (id, direction = `go`) => {
   if (id === `demo`)
     return new Promise((resolve, reject) => {
-      const data = demoRoute.route
+      const data = Object.assign({}, demoRoute.route)
+      
+      data.stations = data.stations[direction] || []  // 取返程或去程
+
       initNewRoute(data).then(() => {
         initNewRoute(data)
         resolve(data)
-        console.log(data)
       })
     })
+  else
+    return new Promise((resolve, reject) => {
+      const url = `https://busplay-server.herokuapp.com/OneRouteXQ/${id}`
+      $.ajax({
+        url,
+        type: 'GET',
+        dataType: 'json',
+        success: data => {
+          data.stations = data.stations[direction] || []  // 取返程或去程
 
-  return new Promise((resolve, reject) => {
-    const url = `https://busplay-server.herokuapp.com/OneRouteXQ/${id}`
-    $.ajax({
-      url,
-      type: 'GET',
-      dataType: 'json',
-      success: data => {
-        initNewRoute(data).then(() => {
-          initNewRoute(data)
-          resolve(data)
-          console.log(data)
-        })
-      },
-      error: e => reject(e),
+          initNewRoute(data).then(() => {
+            initNewRoute(data)
+            resolve(data)
+            console.log(data)
+          })
+        },
+        error: e => reject(e),
+      })
     })
-  })
 }
 
 // 處理新建立的路線(初始化)
