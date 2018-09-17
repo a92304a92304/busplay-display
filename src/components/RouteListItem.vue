@@ -3,9 +3,9 @@
   .card-body(@click.stop='gotoRoute(route.id)')
     .row.align-items-center
       .col-12.col-md-auto.text-left.text-md-center
-        .name {{ route.name.ch }}
+        .name.mr-3.mr-md-0.d-inline-block.d-md-block {{ route.name.ch }}
         span(v-if='route.name.hasOwnProperty(`en`)') {{ route.name.en }}
-      .col-12.col-md.mb-2
+      .col-12.col-md
         .departure
           fa.mr-2(icon='map-marker' size="xs")
           span {{ route.departure.ch }}
@@ -14,7 +14,7 @@
           fa.mr-2(icon='angle-right')
           span {{ route.destination.ch }}
           small(v-if='route.destination.hasOwnProperty(`en`)') {{ route.destination.en }}
-      .col-auto.direction-btn
+      .col-auto.direction-btn.mt-3.mt-md-0
         button.btn.btn-primary(@click.stop='gotoRoute(route.id, `go`)') 去程
         button.btn.btn-primary(@click.stop='gotoRoute(route.id, `back`)') 返程
 </template>

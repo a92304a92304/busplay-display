@@ -1,7 +1,7 @@
 <template lang="pug">
 section
   h4.text-light 演示路線
-  RouteListItem(:route='demoRoute' v-if='demoRoute')
+  RouteListItem.mb-5(:route='demoRoute' v-if='demoRoute')
 
   h4.text-light 線上路線列表
   .loading(v-if='!routes') #[fa(icon='spinner' spin)]
