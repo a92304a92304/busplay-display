@@ -65,8 +65,8 @@
         .ad(v-for='(i, index) in carousels' :key='index' v-if='index === carousel - 1 && carousels[carousel - 1].type === `ad`')
           //- 僅圖片的輪播
           .ad-img(v-if='!getCarouselContent(index).title.ch')
-            img.fade-in-left(:src='getCarouselContent(index).img' :key='getCarouselContent(index).img')
-              
+            img.fade-in-left(:src='getCarouselContent(index).img')
+
           //- 有圖片和文字的輪播
           .ad-text(v-else-if='index === carousel - 1')
             h4.fade-in-left(:style='{ borderColor: data.color }') {{ getCarouselContent(index).title.ch }} / {{ getCarouselContent(index).title.en }}
@@ -294,10 +294,11 @@ export default {
         this.resetMainStationLang()
       }
     },
-    carouselContentText () {
+    carouselContentText () {  // 偵測到當輪播列表發生變動時，從頭開始播放
+      console.log(`changeed`)
       clearInterval(this.carouselTimer)
       this.carousel = 0
-      this.setCarousel()
+      this.carouselTimer = setTimeout(() => this.setCarousel(), 7000)
     }
   },
   updated () {
