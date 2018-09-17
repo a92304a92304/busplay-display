@@ -1,9 +1,20 @@
 const $ = require('jquery')
 const gps = require('./gps')
+const demoRoute = require('./demoRoute')
 
 const distanceOffset = 50
 
 const fetchRoute = (id) => {
+  if (id === `demo`)
+    return new Promise((resolve, reject) => {
+      const data = demoRoute.route
+      initNewRoute(data).then(() => {
+        initNewRoute(data)
+        resolve(data)
+        console.log(data)
+      })
+    })
+
   return new Promise((resolve, reject) => {
     const url = `https://busplay-server.herokuapp.com/OneRouteXQ/${id}`
     $.ajax({

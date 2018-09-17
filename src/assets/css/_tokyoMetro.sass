@@ -313,7 +313,9 @@ $main-station-font-size: 4rem
       .en
         font-size: .8rem
 
+// 輪播區塊
 .ad
+  // 僅圖片的輪播
   .ad-img
     display: flex
     height: 100%
@@ -321,9 +323,10 @@ $main-station-font-size: 4rem
     align-items: flex-start
     img
       object-fit: contain
-      height: calc(100% - 1.5rem)
       width: 100%
+      height: calc(100% - 1.5rem)
 
+  // 含文字和圖片的輪播
   .ad-text
     height: 100%
     padding: 1rem
@@ -333,13 +336,14 @@ $main-station-font-size: 4rem
       align-items: center
       padding: 0 1rem
       .ch
-        font-size: 1rem
+        font-size: 1.1rem
       .en
         font-size: .9rem
     img
       width: auto
       max-width: 12rem
       height: auto
+
 
 @keyframes move-in
   from
@@ -391,7 +395,7 @@ $main-station-font-size: 4rem
 
 .img-enter
   animation: zoom-in .5s
-  animation-delay: .3s
+  animation-delay: .5s
   animation-fill-mode: backwards
 
 .ad-img-enter

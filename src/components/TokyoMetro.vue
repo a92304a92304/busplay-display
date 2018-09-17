@@ -48,6 +48,7 @@
               ul #[li]
 
       template(v-else)
+        //- |　{{ carousels.map(val => val.type) }}
         //- 景點
         .spot(v-if='carousels[carousel - 1].type === `spot`')
           h4.headline-enter(:style='{ borderColor: data.color }') 周邊資訊 / Information
@@ -70,12 +71,12 @@
           //- 有圖片和文字的輪播
           .ad-text(v-else-if='index === carousel - 1')
             h4.fade-in-left(:style='{ borderColor: data.color }') {{ getCarouselContent(index).title.ch }} / {{ getCarouselContent(index).title.en }}
-            .content.fade-in-left(style={ animationDelay: `.15s` })
+            .content.fade-in-left(style={ animationDelay: `.2s` })
               .row.align-items-center
                 .col
                   p.ch(v-html='getCarouselContent(index).content.ch')
                   p.en(v-html='getCarouselContent(index).content.en')
-                .col-auto.img-enter(v-if='getCarouselContent(index).img')
+                .col-3.img-enter(v-if='getCarouselContent(index).img')
                   img(:src='getCarouselContent(index).img')
 
 
@@ -295,7 +296,6 @@ export default {
       }
     },
     carouselContentText () {  // 偵測到當輪播列表發生變動時，從頭開始播放
-      console.log(`changeed`)
       clearInterval(this.carouselTimer)
       this.carousel = 0
       this.carouselTimer = setTimeout(() => this.setCarousel(), 7000)

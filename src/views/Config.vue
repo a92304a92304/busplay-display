@@ -1,27 +1,21 @@
 <template lang="pug">
 main
   .container
-    .row.justify-content-between.align-items-center
-      .col-auto
-        h1.logo.mt-2
-          img.img-fluid.mr-1(src='@/assets/img/logo.svg' style={ height: `3rem` })
-          span Busplay
-      .col-auto
-        router-link.config-btn.text-light(to='/config') #[fa(icon='cog')]
-    RouteList.mt-3
+    h1.text-light
+      router-link.text-light.mr-4(to='/') #[fa(icon='chevron-left')]
+      span Configuration
 </template>
 
 <script>
-import RouteList from '@/views/RouteList'
+
 
 export default {
-  name: 'Index',
+  name: 'Config',
   data () {
     return {
     }
   },
   components:{
-    RouteList,
   },
   mounted () {
 
@@ -38,7 +32,7 @@ main
   background-color: #1e1e1e
   background-position: top
   background-size: cover
-  padding: 1rem 0
+  padding: 2rem 0
   min-height: 100vh
   -webkit-user-select: none
   -moz-user-select: none
@@ -47,9 +41,6 @@ h1
   color: white
   display: inline-block
   font-weight: 100
-  img
-    vertical-align: middle
 
-.config-btn
-  font-size: 1.2rem
+
 </style>

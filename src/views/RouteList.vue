@@ -1,8 +1,17 @@
 <template lang="pug">
 section
-  .loading(v-if='!routes')
-    fa(icon='spinner' spin)
-
+  //- demo 用
+  h4.text-light 演示路線
+  .card.item.mb-5
+    router-link.card-body(:to='`/display/demo`')
+      .row.align-items-center
+        .col-auto.text-center #[.name {{ demoRoute.routeName.ch }}] #[span {{ demoRoute.routeName.en }}]
+        .col
+          .departure #[fa.mr-2(icon='map-marker' size="xs")] #[span {{ demoRoute.departureName.ch }}] #[small {{ demoRoute.departureName.en }}]
+          .destination #[fa.mr-2(icon='angle-right')] #[span {{ demoRoute.destinationName.ch }}] #[small {{ demoRoute.destinationName.en }}]
+          
+  h4.text-light 線上路線列表
+  .loading(v-if='!routes') #[fa(icon='spinner' spin)]
   transition-group(name='fade')
     .card.item.mb-2(v-for='(route, index) in routes' v-if='routes' :key='index' :style='{ borderLeftColor: route.color, animationDelay: `${index * 0.05}s` }')
       router-link.card-body(:to='`/display/${route.id}`')
@@ -29,12 +38,14 @@ section
 
 <script>
 import $ from 'jquery'
+import demoRoute from '@/assets/js/demoRoute'
 
 export default {
   name: 'RouteList',
   data () {
     return {
-      routes: null
+      routes: null,
+      demoRoute: demoRoute.route
     }
   },
   mounted () {

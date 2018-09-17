@@ -5,7 +5,7 @@ main
 
   //- Debug 資訊
   .debug.back(v-if='debugMode')
-    router-link.text-light(to='/') #[fa(icon='arrow-circle-left' size='4x')]
+    router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
 
   .debug.img(v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
@@ -31,7 +31,7 @@ main
       button.btn.btn-primary(@click='setRatio()') 16:9
       button.btn.btn-primary(@click='setRatio(4,3)') 4:3
       button.btn.btn-dark(@click='enterFullScreen()') 全屏
-    .btn-group.btn-group-sm
+    .btn-group.btn-group-sm('hidden')
       button.btn.btn-primary(@click='current--') #[fa(icon='angle-left')]
       button.btn.btn-primary(@click='current++') #[fa(icon='angle-right')]
     br
@@ -52,6 +52,8 @@ import ScrollText from '@/components/ScrollText'
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
 import route from '@/assets/js/route'
+
+import demoRoute from '@/assets/js/demoRoute'
 
 export default {
   name: 'Display',
@@ -77,10 +79,11 @@ export default {
     vm.setTime()
     vm.fetchWeather()
     vm.setWindow()
-    // 取得路線 data
-    vm.fetchRoute(routeId).then(() => {
+
+    vm.fetchRoute(routeId).then(() => {   // 取得路線 data
       vm.startGps()
     })
+
   },
   methods: {
     // 設定當前時間
@@ -128,6 +131,7 @@ export default {
         destinationName: r.destinationName,
         color: r.themeColor,
         thisStop: r.stations[current].name,
+
       }
 
       // 放入要顯示的7個站
