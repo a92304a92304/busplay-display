@@ -2,7 +2,7 @@ const $ = require('jquery')
 const gps = require('./gps')
 const demoRoute = require('./demoRoute')
 
-const distanceOffset = 50
+const distanceOffset = 25
 
 const fetchRoute = (id, direction = `go`) => {
   if (id === `demo`)
@@ -88,21 +88,30 @@ const setCurrent = (data, position) => {
     const nextMinDistance = data.current.nextMinDistance
     const nextNewDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[nextIndex])
 
-    if (nextNewDistance <= nextMinDistance + distanceOffset) {
+    if (nextNewDistance <= nextMinDistance + distanceOffset) {  // 新下站距 <= 原最小下站距 + 偏移量
       // 正在接近下一站: 更新`與下一站的最小距離`
-      data.current.nextMinDistance = nextNewDistance
+      if (nextMinDistance - nextNewDistance > distanceOffset) {
+        data.current.nextMinDistance = nextNewDistance
+        data.current.prevIndex = data.current.nextIndex - 1
+        data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
+      }
+
     } else {
       // 已遠離下一站: 設定該站為passed, `下一站index`++, 重設`與下一站的最小距離`
       if (data.current.nextIndex + 1 < stationsForCalc.length) {
         data.stations[nextIndex].passed = true
         data.current.nextIndex++
+
         data.current.nextMinDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.nextIndex])
+        data.current.prevIndex = data.current.nextIndex - 1
+        data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
       } else {
         // 已超越終點站
       }
     }
-    data.current.prevIndex = data.current.nextIndex - 1
-    data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
+
+    // data.current.prevIndex = data.current.nextIndex - 1
+    // data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
 
     resolve(data)
   })

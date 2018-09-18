@@ -48,7 +48,6 @@
               ul #[li]
 
       template(v-else)
-        //- |　{{ carousels.map(val => val.type) }}
         //- 景點
         .spot(v-if='carousels[carousel - 1].type === `spot`')
           h4.headline-enter(:style='{ borderColor: data.color }') 周邊資訊 / Information
@@ -79,6 +78,8 @@
                 .col-3.img-enter(v-if='getCarouselContent(index).img')
                   img(:src='getCarouselContent(index).img')
 
+        .carousel-bar(v-if='debugMode')
+          .item(v-for='(i, index) in carousels' :class='{ active: index === carousel - 1 }') {{ getCarouselBarText(i) }}
 
     template(v-else)
       .logo-banner
@@ -127,6 +128,7 @@ export default {
     marquee: { type: Array, default: null },
     carousels: { type: Array, default: null },
     htmlFontSize: { type: Number, default: 12 },
+    debugMode: { type: Boolean, default: false }
   },
   components: {
     ScrollText,
@@ -245,6 +247,11 @@ export default {
       }
       vm.carouselTimer = setTimeout(() => vm.setCarousel(), duration)   // 在 duration 後重複執行
     },
+    getCarouselBarText (obj) {
+      if (obj.type === `spot`) return `spot`
+      else if (!obj.content.content.ch) return `圖`
+      return `ad`
+    }
   },
   computed: {
     topStyle () {

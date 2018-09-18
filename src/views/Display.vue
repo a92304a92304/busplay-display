@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle' @click.stop='debugMode = !debugMode')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize' :debugMode='debugMode')
 
   //- Debug 資訊
   .debug.back(v-if='debugMode')
@@ -65,7 +65,7 @@ export default {
       gpsTimer: null,      // 儲存gps timer的id
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
-      gpsTimerInterval: 5000,  // 取得 gps 的間隔
+      gpsTimerInterval: 8 * 1000,  // 取得 gps 的間隔
       carousels: [],
     }
   },
