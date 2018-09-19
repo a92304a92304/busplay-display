@@ -4,12 +4,15 @@ main
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize' :debugMode='debugMode')
 
   //- Debug 資訊
+  //- 返回按鈕
   .debug.back(v-if='debugMode')
     router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
 
+  //- Google Maps
   .debug.img(v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
 
+  //- 站列表
   .debug.stations(v-if='debugMode')
     .list
       table(v-if='route')
@@ -18,6 +21,7 @@ main
             td #[fa(icon='arrow-right' v-if='index === current')] {{ i.name.ch }}
             td 距下 {{ i.distance }}m
 
+  //- 前後站和 gps 資訊
   .debug.current(v-if='debugMode && route')
     div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
     div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
@@ -26,6 +30,7 @@ main
       div #[span.badge.badge-light lng] {{ position.longitude }}
       div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
 
+  //- debug 按鈕
   .debug.btn(v-if='debugMode')
     .btn-group.btn-group-sm.mb-1
       button.btn.btn-primary(@click='setRatio()') 16:9
@@ -52,6 +57,7 @@ import ScrollText from '@/components/ScrollText'
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
 import route from '@/assets/js/route'
+import carouselController from '@/assets/js/carousel'
 
 import demoRoute from '@/assets/js/demoRoute'
 
@@ -65,7 +71,7 @@ export default {
       gpsTimer: null,      // 儲存gps timer的id
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
-      gpsTimerInterval: 8 * 1000,  // 取得 gps 的間隔
+      gpsTimerInterval: 10 * 1000,  // 取得 gps 的間隔
       carousels: [],
     }
   },
@@ -81,8 +87,9 @@ export default {
     vm.setWindow()
     vm.setDirection()
 
-    vm.fetchRoute(routeId, this.direction).then(() => {   // 取得路線 data
+    vm.fetchRoute(routeId, vm.direction).then(() => {   // 取得路線 data
       vm.startGps()
+      carouselController.get(vm.route)
     })
 
   },

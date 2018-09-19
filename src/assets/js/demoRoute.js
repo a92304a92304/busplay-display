@@ -1815,7 +1815,42 @@ const route = {
       }
     ]
   },
-  "rules" : [],
+  "rules" : [
+    {
+      "condition": 1,
+      "distance": 100,
+      "SID": 10179,
+      "content": {
+        "title": {
+          "ch": null,
+          "en": null
+        },
+        "content": {
+          "ch": null,
+          "en": null
+        },
+        "img": "https://i.imgur.com/WEJUNI5.jpg?省喬註_這個是定期票的廣告"
+      },
+      "RID": 0,
+    },
+    {
+      "condition": 2,
+      "distance": 400,
+      "content": {
+        "title": {
+          "ch": "乘車注意事項",
+          "en": "Notice"
+        },
+        "content": {
+          "ch": "為了維護服務品質，請勿在車內吸煙、飲食、嚼食口香糖或檳榔，謝謝您的配合，祝您旅途愉快。",
+          "en": "Please do not smoke, eat, drink, chew gum or betel nut in the car. Have a nice trip."
+        },
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png"
+      },
+      "RID": 0,
+    },
+
+  ],
   "marquee" : [
     "剛剛去加油站加油，我跟工讀生說９２加１００，結果他回我等於１９２，哇幹，他應該沒被油槍打過吧",
     "想起國中會考那年，我剛進考場才發現准考證忘記帶，正當我焦急的時候看到我爸氣喘吁吁的跑來爸：「你的准考證放在家裡了！」我感動的說：「謝謝，急死我了，快給我吧，要考試了！」這時我爸愣了一下「我不是說放在家裡了嗎？」",
