@@ -4,7 +4,7 @@ const geolib = require('geolib')
 
 const options = {
   enableHighAccuracy: true,
-  timeout: 5000,
+  timeout: 10000,
   maximumAge: 0
 }
 
@@ -18,8 +18,10 @@ const getPosition = () => {
       const result = crd
 
       if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
-      resolve(result)
-    })
+      else resolve(result)
+    }, (e) => {
+      reject(e)
+    }, options)
   })
 }
 
@@ -42,7 +44,6 @@ const getNearest = (current, stations) => {
   }
   return resultIndex
 }
-
 
 // 計算兩點經緯度的距離
 const calcDistance = (lat1, lng1, lat2, lng2) => {

@@ -71,7 +71,7 @@
           .ad-text(v-else-if='index === carousel - 1')
             h4.fade-in-left(:style='{ borderColor: data.color }') {{ getCarouselContent(index).title.ch }} / {{ getCarouselContent(index).title.en }}
             .content.fade-in-left(style={ animationDelay: `.2s` })
-              .row.align-items-center
+              .row.align-items-center.no-gutters
                 .col
                   p.ch(v-html='getCarouselContent(index).content.ch')
                   p.en(v-html='getCarouselContent(index).content.en')
