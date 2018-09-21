@@ -9,7 +9,7 @@ main
     router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
 
   //- Google Maps
-  .debug.img(v-if='debugMode')
+  //- .debug.img(v-if='debugMode')
     img.img-fluid(v-if='position' :src='position.img')
 
   //- 站列表
@@ -44,6 +44,9 @@ main
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
       button.btn.btn-warning(@click='initRoute()') reset route
+
+  .debug.simulator(v-if='route &&　debugMode && position')
+    Simulator(:route='route' :position='position')
 </template>
 
 <script>
@@ -53,11 +56,13 @@ import moment from 'moment'
 
 import TokyoMetro from '@/components/TokyoMetro'
 import ScrollText from '@/components/ScrollText'
+import Simulator from '@/components/Simulator'
 
 import { display } from '@/mixins/display'
 import gps from '@/assets/js/gps'
 import route from '@/assets/js/route'
 import carouselController from '@/assets/js/carousel'
+
 
 import demoRoute from '@/assets/js/demoRoute'
 
@@ -78,6 +83,7 @@ export default {
   components: {
     TokyoMetro,
     ScrollText,
+    Simulator,
   },
   mounted () {
     const vm = this

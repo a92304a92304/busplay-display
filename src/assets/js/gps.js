@@ -1,5 +1,3 @@
-// https://developer.mozilla.org/zh-TW/docs/Web/API/Geolocation/watchPosition
-
 const geolib = require('geolib')
 
 const options = {
@@ -19,6 +17,7 @@ const getPosition = () => {
 
       if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
       else resolve(result)
+      
     }, (e) => {
       reject(e)
     }, options)
@@ -42,6 +41,7 @@ const getNearest = (current, stations) => {
   } catch (e) {
     return null
   }
+
   return resultIndex
 }
 

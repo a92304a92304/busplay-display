@@ -35,7 +35,7 @@ export default {
   methods: {
     fetchList () {
       const url = `https://busplay-server.herokuapp.com/AllRouteXQ/`
-      $.get(url, list => this.routes = list )
+      $.get(url, list => this.routes = JSON.parse(list))
     },
     gotoTop () {
       document.body.scrollTop = 0

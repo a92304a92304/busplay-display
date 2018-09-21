@@ -2,7 +2,7 @@
 .card.item.mb-2(:style='{ borderLeftColor: route.color, animationDelay: `${index * 0.05}s` }')
   .card-body(@click.stop='gotoRoute(route.id)')
     .row.align-items-center
-      .col-12.col-md-auto.text-left.text-md-center
+      .col.col-md-auto.text-left.text-md-center
         .name.mr-3.mr-md-0.d-inline-block.d-md-block {{ route.name.ch }}
         span(v-if='route.name.hasOwnProperty(`en`)') {{ route.name.en }}
       .col-12.col-md
@@ -17,6 +17,7 @@
       .col-auto.direction-btn.mt-3.mt-md-0
         button.btn.btn-primary(@click.stop='gotoRoute(route.id, `go`)') 去程
         button.btn.btn-primary(@click.stop='gotoRoute(route.id, `back`)') 返程
+        span.badge.badge-primary.ml-2 {{ route.RID }}
 </template>
 
 <script>

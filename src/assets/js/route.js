@@ -110,9 +110,6 @@ const setCurrent = (data, position) => {
       }
     }
 
-    // data.current.prevIndex = data.current.nextIndex - 1
-    // data.current.prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[data.current.prevIndex])
-
     resolve(data)
   })
 }

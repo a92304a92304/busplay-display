@@ -28,7 +28,6 @@ const get = (route) => {
   return result
 }
 
-
 export default {
   get
 }

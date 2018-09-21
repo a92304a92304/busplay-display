@@ -1847,9 +1847,8 @@ const route = {
         },
         "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png"
       },
-      "RID": 0,
-    },
-
+      "RID": 1,
+    }
   ],
   "marquee" : [
     "剛剛去加油站加油，我跟工讀生說９２加１００，結果他回我等於１９２，哇幹，他應該沒被油槍打過吧",
