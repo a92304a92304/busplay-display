@@ -8,10 +8,6 @@ main
   .debug.back(v-if='debugMode')
     router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
 
-  //- Google Maps
-  //- .debug.img(v-if='debugMode')
-    img.img-fluid(v-if='position' :src='position.img')
-
   //- 站列表
   .debug.stations(v-if='debugMode === 1')
     .list
@@ -126,6 +122,8 @@ export default {
         vm.current = vm.route.current.nextIndex
         vm.setCarousel()
         vm.setData()
+      }).catch((e) => {
+        console.log(e)
       })
 
       return this.setGps
