@@ -1,9 +1,12 @@
 <template lang="pug">
 div
-  gmap-map.google-map(:center='route.stations[Math.floor(route.stations.length / 2)].location' :zoom='11')
+  gmap-map.google-map(:center='current' :zoom='14')
+    gmap-marker.station(:key='index' v-for='(i, index) in route.stations' :position='i.location' :icon='getStationIcon(i, index)')
     gmap-marker.current(:position='current' :icon='busIcon')
-    gmap-marker(:key='index', v-for='(i, index) in route.stations' :position='i.location' :icon='stationIcon')
     gmap-polyline(:options="polylineOptions" :path='route.stations.map(val => val.location)')
+  .controller.mt-1
+    fa.mr-1(icon='pause')
+    fa(icon='play')
 </template>
 
 <script>
@@ -11,16 +14,24 @@ export default {
   name: 'Simulator',
   data () {
     return {
-      stationIcon: { url: `/img/marker-default.png` },
       busIcon: { url: `/img/pin.png` },
       polylineOptions: { geodesic: true, strokeColor: `#15ffe2` },
     }
   },
   props:{
     route: { type: Object, default: {} },
-    position: { type: Object, default: {} }
+    position: { type: Object, default: {} },
   },
   methods: {
+    // 取得站 Marker 的 Icon
+    getStationIcon (station, index) {
+      let url = `/img/marker-default.png`
+
+      if(index === this.route.current.nextIndex) url = `/img/marker-current.png`
+      else if (station.passed) url = `/img/marker-passed.png`
+
+      return { url }
+    }
   },
   computed: {
     current () {
@@ -36,9 +47,8 @@ export default {
 @import "~bootswatch/dist/lux/bootswatch"
 
 .google-map
-  width: 500px
-  height: 300px
+  width: 30rem
+  height: 20rem
 
-.current
-  z-index: 100000
+.controller
 </style>

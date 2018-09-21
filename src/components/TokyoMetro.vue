@@ -78,7 +78,7 @@
                 .col-3.img-enter(v-if='getCarouselContent(index).img')
                   img(:src='getCarouselContent(index).img')
 
-        .carousel-bar(v-if='debugMode')
+        .carousel-bar(v-if='debugMode == 1')
           .item(v-for='(i, index) in carousels' :class='{ active: index === carousel - 1 }') {{ getCarouselBarText(i) }}
 
     template(v-else)
@@ -128,7 +128,7 @@ export default {
     marquee: { type: Array, default: null },
     carousels: { type: Array, default: null },
     htmlFontSize: { type: Number, default: 12 },
-    debugMode: { type: Boolean, default: false }
+    debugMode: { type: Number, default: 0 }
   },
   components: {
     ScrollText,

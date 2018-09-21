@@ -1,6 +1,6 @@
 <template lang="pug">
 main
-  #display-area(:style='areaStyle' @click.stop='debugMode = !debugMode')
+  #display-area(:style='areaStyle' @click.stop='toggleDebugMode()')
     TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize' :debugMode='debugMode')
 
   //- Debug 資訊
@@ -13,7 +13,7 @@ main
     img.img-fluid(v-if='position' :src='position.img')
 
   //- 站列表
-  .debug.stations(v-if='debugMode')
+  .debug.stations(v-if='debugMode === 1')
     .list
       table(v-if='route')
         tbody
@@ -22,7 +22,7 @@ main
             td 距下 {{ i.distance }}m
 
   //- 前後站和 gps 資訊
-  .debug.current(v-if='debugMode && route')
+  .debug.current(v-if='debugMode === 1 && route')
     div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
     div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
     .text-light(v-if='position')
@@ -31,7 +31,7 @@ main
       div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
 
   //- debug 按鈕
-  .debug.btn(v-if='debugMode')
+  .debug.btn(v-if='debugMode === 1')
     .btn-group.btn-group-sm.mb-1
       button.btn.btn-primary(@click='setRatio()') 16:9
       button.btn.btn-primary(@click='setRatio(4,3)') 4:3
@@ -45,7 +45,7 @@ main
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
       button.btn.btn-warning(@click='initRoute()') reset route
 
-  .debug.simulator(v-if='route &&　debugMode && position')
+  .debug.simulator(v-if='debugMode === 2 &&route && position')
     Simulator(:route='route' :position='position')
 </template>
 
@@ -70,7 +70,7 @@ export default {
   name: 'Display',
   data () {
     return {
-      debugMode: true,     // 是否顯示debug panel
+      debugMode: 2,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
       position: null,      // 當前 gps 資訊
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存gps timer的id
@@ -256,6 +256,10 @@ export default {
       this.weatherTimer = null
       this.clockTimer = null
     },
+    toggleDebugMode () {
+      const max = 3
+      this.debugMode = ((this.debugMode + 1) + max) % max
+    }
   },
   watch: {
     current () {
