@@ -58,9 +58,12 @@ const initNewRoute = (data, direction = `go`) => {
       const nextIndex = gps.getNearest([position.latitude, position.longitude], stationsForCalc)
       const nextMinDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[nextIndex])
 
-      // if (nextIndex - 1 >= 0)
-      const prevIndex = nextIndex - 1
-      const prevDistance = gps.calcDistance(...thisPosition, ...stationsForCalc[prevIndex])
+
+      const prevIndex = (nextIndex - 1 >= 0) ? (nextIndex - 1) : null
+      const prevDistance = (prevIndex)
+        ? gps.calcDistance(...thisPosition, ...stationsForCalc[prevIndex])
+        : null
+
 
       // 初始化下一站的附加資訊
       data.current = {

@@ -19,8 +19,14 @@ main
 
   //- 前後站和 gps 資訊
   .debug.current(v-if='debugMode === 1 && route')
-    div #[fa(icon='arrow-left')] #[span.badge.badge-dark {{ route.current.prevIndex }}] {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
-    div #[fa(icon='arrow-right')] #[span.badge.badge-dark {{ route.current.nextIndex }}] {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
+    div(v-if='route.current.prevIndex != null')
+      fa(icon='arrow-left')
+      span.badge.badge-dark {{ route.current.prevIndex }}
+      | {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
+    div(v-if='route.current.nextIndex != null')
+      fa(icon='arrow-right')
+      span.badge.badge-dark {{ route.current.nextIndex }}
+      | {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
     .text-light(v-if='position')
       div #[span.badge.badge-light lat] {{ position.latitude }}
       div #[span.badge.badge-light lng] {{ position.longitude }}
@@ -70,6 +76,7 @@ export default {
       position: null,      // 當前 gps 資訊
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存gps timer的id
+      watchId: null,
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
       gpsTimerInterval: 10 * 1000,  // 取得 gps 的間隔
@@ -105,25 +112,35 @@ export default {
     },
     // 開始定時取得GPS
     startGps () {
-      this.gpsTimer = setInterval(this.setGps(), this.gpsTimerInterval)
+      // this.gpsTimer = setInterval(this.setGps(), this.gpsTimerInterval)
+      this.setGps()
     },
     // 停止定時取得GPS
     stopGps () {
       clearInterval(this.gpsTimer)
       this.gpsTimer = null
+      navigator.geolocation.clearWatch(this.watchId)
     },
     // 取得GPS
     setGps () {
       const vm = this
 
-      gps.getPosition().then((position) => {
+      // gps.getPosition().then((position) => {
+      //   vm.position = position
+      //   route.setCurrent(vm.route, position)
+      //   vm.current = vm.route.current.nextIndex
+      //   vm.setCarousel()
+      //   vm.setData()
+      // }).catch((e) => {
+      //   console.log(e)
+      // })
+
+      vm.watchId = gps.watchPosition((position) => {
         vm.position = position
         route.setCurrent(vm.route, position)
         vm.current = vm.route.current.nextIndex
         vm.setCarousel()
         vm.setData()
-      }).catch((e) => {
-        console.log(e)
       })
 
       return this.setGps
@@ -148,7 +165,7 @@ export default {
       // 放入要顯示的7個站
       for (let i = 0; i < 7; i++) {
         const num = i + current - 1
-        const s = (num >= 0 && num < r.stations.length) ? r.stations[num].name : {}
+        const s = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.stations[num].name : {}
         stations.push(s)
       }
 

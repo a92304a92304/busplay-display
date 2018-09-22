@@ -6,23 +6,38 @@ const options = {
   maximumAge: 0
 }
 
-// 取得目前 GPS 方位
+// 取得目前 GPS 方位 (取得一次)
 const getPosition = () => {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const crd = pos.coords
-      const img = `https://maps.googleapis.com/maps/api/staticmap?zoom=18&size=800x600&sensor=false&center=${crd.latitude},${crd.longitude}&markers=color:red%7C${crd.latitude},${crd.longitude}`
-      crd.img = img
       const result = crd
 
       if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
       else resolve(result)
-      
     }, (e) => {
       reject(e)
     }, options)
   })
 }
+
+// 監聽 GPS 是否發生變動
+const watchPosition = (success) => {
+  const watchId = navigator.geolocation.watchPosition((pos) => {
+    const crd = pos.coords
+    const result = crd
+
+    if (crd.accuracy > 80) {}
+    else success(result)
+
+  }, (e) => {
+    alert(e)
+  }, options)
+
+  return watchId
+}
+
+// navigator.geolocation.clearWatch(watchId)
 
 // 取得距離最近的 index
 const getNearest = (current, stations) => {
@@ -56,6 +71,7 @@ const calcDistance = (lat1, lng1, lat2, lng2) => {
 
 module.exports = {
   getPosition,
+  watchPosition,
   calcDistance,
   getNearest,
 }
