@@ -239,7 +239,7 @@ export default {
       if (length === 0) {   // 若無輪播訊息
         vm.carousel = 0     // 將當前輪播訊息設定為 0，即預設值顯示路線
       } else {
-        // vm.toggleCarousel()             // 切換輪播訊息
+        vm.toggleCarousel()             // 切換輪播訊息
         duration = (vm.carousel == 0)   // 播放的持續時間，若本則訊息為`路線`:
           ? routeDuration   // 設為路線畫面固定的持續時間
           : vm.carousels[vm.carousel - 1].duration  // 設為各則訊息的持續時間

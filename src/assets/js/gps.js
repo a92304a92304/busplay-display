@@ -15,6 +15,7 @@ const getPosition = () => {
 
       if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
       else resolve(result)
+
     }, (e) => {
       reject(e)
     }, options)
@@ -31,7 +32,7 @@ const watchPosition = (success) => {
     else success(result)
 
   }, (e) => {
-    alert(e)
+    alert(JSON.stringify(e))
   }, options)
 
   return watchId
