@@ -15,8 +15,8 @@
           span {{ route.destination.ch }}
           small(v-if='route.destination.hasOwnProperty(`en`)') {{ route.destination.en }}
       .col-auto.direction-btn.mt-3.mt-md-0
-        button.btn.btn-primary(@click.stop='gotoRoute(route.id, `go`)') 去程
-        button.btn.btn-primary(@click.stop='gotoRoute(route.id, `back`)') 返程
+        button.btn.btn-primary(@click.stop='gotoRoute(route.RID, `go`)') 去程
+        button.btn.btn-primary(@click.stop='gotoRoute(route.RID, `back`)') 返程
         span.badge.badge-primary.ml-2 {{ route.RID }}
 </template>
 
@@ -26,13 +26,16 @@ export default {
   props:{
     route: { type: Object, default: {} },
     index: { type: Number , default: 0 },
+    config: {
+      type: Object,
+      default () { return  { position: `gps` }  }
+    },
   },
   methods: {
     gotoRoute (id, direction = `go`) {
-      this.$router.push(`/display/${id}?direction=${direction}`)
+      this.$router.push(`/display/${id}?direction=${direction}&position=${this.config.position}`)
     }
   }
-
 }
 </script>
 

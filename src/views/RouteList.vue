@@ -1,12 +1,14 @@
 <template lang="pug">
 section
   h4.text-light 演示路線
-  RouteListItem.mb-5(:route='demoRoute' v-if='demoRoute')
+  RouteListItem.mb-5(:route='demoRoute' v-if='demoRoute' :config='config')
 
-  h4.text-light 線上路線列表
+  h4.text-light
+    | 線上路線列表
+    a.text-light(href='#' @click.stop.prevent='fetchList()') #[fa.ml-3(icon='sync-alt' title='重新載入列表')]
+
   .loading(v-if='!routes') #[fa(icon='spinner' spin)]
-  transition-group(name='fade')
-    RouteListItem(v-for='(route, index) in routes' :route='route' :index='index' :key='index')
+  RouteListItem.fade-enter-active(v-for='(route, index) in routes' :route='route' :index='index' :key='index' :config='config')
 
   .text-center(v-if='routes')
     button.btn.btn-outline-secondary.my-3(@click='gotoTop()')
@@ -26,6 +28,12 @@ export default {
       demoRoute: null,
     }
   },
+  props:{
+    config: {
+      type: Object,
+      default () { return  { position: `gps` }  }
+    },
+  },
   mounted () {
     this.setDemoRoute()
     this.fetchList()
@@ -35,6 +43,7 @@ export default {
   methods: {
     fetchList () {
       const url = `https://busplay-server.herokuapp.com/AllRouteXQ/`
+      this.routes = null
       $.get(url, list => this.routes = JSON.parse(list))
     },
     gotoTop () {
@@ -48,6 +57,7 @@ export default {
         departure: demo.departureName,
         destination: demo.destinationName,
         id: `demo`,
+        RID: `demo`,
         color: ``,
       }
     }
@@ -67,7 +77,6 @@ export default {
   color: white
   font-size: 2rem
   text-align: center
-
 
 @keyframes fade
   from

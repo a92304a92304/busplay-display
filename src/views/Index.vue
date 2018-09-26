@@ -1,14 +1,19 @@
 <template lang="pug">
 main
   .container
-    .row.justify-content-between.align-items-center
+    .row.justify-content-between.align-items-center.mb-3
       .col-auto
         h1.logo.mt-2
           img.img-fluid.mr-1(src='@/assets/img/logo.svg' style={ height: `3rem` })
           span Busplay
-      .col-auto
-        router-link.config-btn.text-light(to='/config') #[fa(icon='cog')]
-    RouteList.mt-3
+    .row.config.mb-5
+      .col-12
+        h2 位置取得方式
+      .col-12
+        .btn-group
+          button.btn.btn-secondary(:class='positionBtnClass(`gps`)' @click='config.position = `gps`') 裝置 GPS
+          button.btn.btn-secondary(:class='positionBtnClass(`simulator`)' @click='config.position = `simulator`') 行車模擬器
+    RouteList(:config='config').mb-5
 </template>
 
 <script>
@@ -18,6 +23,7 @@ export default {
   name: 'Index',
   data () {
     return {
+      config: { position: `gps` }
     }
   },
   components:{
@@ -26,6 +32,11 @@ export default {
   mounted () {
 
   },
+  methods: {
+    positionBtnClass (value) {
+      return (value == this.config.position) ? `btn-light` : `btn-outline-light`
+    }
+  }
 }
 </script>
 
@@ -43,12 +54,13 @@ main
   -webkit-user-select: none
   -moz-user-select: none
 
-h1
+h1,h2
   color: white
   display: inline-block
   font-weight: 100
   img
     vertical-align: middle
+
 
 .config-btn
   font-size: 1.2rem

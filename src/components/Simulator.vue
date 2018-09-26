@@ -1,234 +1,70 @@
 <template lang="pug">
 div
-  gmap-map.google-map(:center='current' :zoom='14' :options='mapOptions')
-    gmap-marker.station(:key='index' v-for='(i, index) in route.stations' :position='i.location' :icon='getStationIcon(i, index)')
+  gmap-map.google-map(:center='googleMapsCenter' :zoom='14' :options='mapOptions' v-if='route')
+    //- 各站點
+    gmap-marker.station(:key='`station${index}`' v-for='(i, index) in route.stations' :position='i.location' :icon='getStationIcon(i, index)')
+    //- 當前位置
     gmap-marker.current(:position='current' :icon='busIcon')
-    gmap-polyline(:options="polylineOptions" :path='route.stations.map(val => val.location)')
+    //- 各站點連接直線
+    gmap-polyline(:options="stationLineOptions" :path='route.stations.map(val => val.location)')
+    //----------
+    //- gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpots' :position='i')
+    //- gmap-polyline(:options="simulateLineOptions" :path='simulateSpots')
+    gmap-marker(:icon='{ url: `/img/marker-simulator.png` }' :position='simulateCurrent')
   //- 遙控器
   .controller
-    .row.align-items-center.no-gutters
+    .row.align-items-center.no-gutters(v-if='data && enable')
       .col-auto
-        fa.mr-2(icon='fast-backward' @click='reset()')
-        fa.mr-2(icon='pause' @click='pause()' v-if='timer !== null')
-        fa.mr-2(icon='play' @click='play()' v-else)
+        fa.mr-2(icon='fast-backward' @click='reset()' title='歸零')
+        fa.mr-2(icon='pause' @click='pause()' v-if='timer !== null' title='暫停')
+        fa.mr-2(icon='play' @click='play()' v-else title='播放')
       .col
-        VueSlider(v-model='sliderValue' :min='sliderMin' :max='sliderMax' :tooltip='`hover`' :speed='.2' :bgStyle='{ background: `white` }')
-      .col-auto {{ sliderValue }}
+        VueSlider(v-model='sliderValue' :min='sliderMin' :max='sliderMax' :tooltip='`hover`' :speed='0' :bgStyle='{ background: `white` }' :real-time='true')
+      .col-auto
+        div(style={ minWidth: `2rem` }) {{ ((sliderValue / sliderMax) * 100).toFixed(0) }} %
+    div(v-else) Loading...
 </template>
 
 <script>
 import $ from 'jquery'
 import VueSlider from 'vue-slider-component'
+import simulator from '@/assets/js/simulator.js'
+
+const playSpeed = 200
 
 export default {
   name: 'Simulator',
   data () {
     return {
       busIcon: { url: `/img/pin.png` },
-      polylineOptions: { geodesic: true, strokeColor: `#15ffe2` },
-      mapOptions: { disableDefaultUI: true, styles: [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.country",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#bdbdbd"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#181818"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#1b1b1b"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#2c2c2c"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#8a8a8a"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#373737"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#3c3c3c"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#4e4e4e"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#000000"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#3d3d3d"
-      }
-    ]
-  }
-] },
+      stationLineOptions: { geodesic: true, strokeColor: `#15ffe2` },
+      simulateLineOptions: { geodesic: true, strokeColor: `#ffe235` },
+      mapOptions: { disableDefaultUI: true, styles: simulator.mapStyle },
       sliderValue: 0,
       sliderMin: 0,
-      sliderMax: 1000,
       timer: null,
+      data: null,
+      counter: 0
     }
   },
-  props:{
-    route: { type: Object, default: {} },
-    position: { type: Object, default: {} },
+  props: {
+    routeId: { },
+    route: { type: Object, default: null },
+    position: { type: Object, default: null },
+    direction: { type: String, default: `go` },
+    enable: { type: Boolean, default: false },
   },
   mounted () {
-    this.fetch()
+    // if (this.enable) {
+    //   this.fetch()
+    //   this.sendSimulatePosition(this.simulateCurrent)
+    // }
   },
   methods: {
     // 取得站 Marker 的 Icon
     getStationIcon (station, index) {
       let url = `/img/marker-default.png`
+      if (!this.route || !this.position) return null
 
       if(index === this.route.current.nextIndex) url = `/img/marker-current.png`
       else if (station.passed) url = `/img/marker-passed.png`
@@ -239,7 +75,7 @@ export default {
       if (this.timer === null) {
         this.timer = setInterval(() => {
           this.sliderValue++
-        }, 100)
+        }, playSpeed)
       }
     },
     pause () {
@@ -252,23 +88,66 @@ export default {
     reset () {
       this.pause()
       this.sliderValue = 0
+      this.$emit(`reset`)
     },
     fetch () {
-      const url = ``
-      $.ajax({
-        url,
-        type: 'GET',
-        dataType: 'json',
-        success: data => {
-        },
-        error: e => console.log(`取得模擬行車路線失敗`),
+      let url = `http://busplay-server.herokuapp.com/simulator/${this.routeId}`
+      url = `http://busplay-server.herokuapp.com/simulator/4` // For Testing
+
+      return new Promise((resolve, reject) => {
+        $.ajax({
+          url,
+          type: 'GET',
+          dataType: 'json',
+          success: result => {
+            this.data = result.data
+            this.init()
+            resolve(this.simulateCurrent)
+          },
+          error: e => console.log(`取得模擬行車路線失敗`),
+        })
       })
-    }
+    },
+    init () {
+    },
+    // 向父組件傳遞模擬的 GPS 資訊
+    sendSimulatePosition (position) {
+      this.$emit(`changed`, position)
+    },
   },
   computed: {
+    // 取得滑動條的最大值
+    sliderMax () {
+      return (this.data) ? this.data.length : 0
+    },
+    // 真實 GPS 位置
     current () {
+      if (!this.position) return { lat: 0, lng: 0 }
       return { lat: this.position.latitude, lng: this.position.longitude }
+    },
+    // 取得模擬點列表
+    simulateSpots () {
+      return (this.data) ? this.data.stations[this.direction] : []
+    },
+    // 模擬 GPS 位置
+    simulateCurrent () {
+      if (!this.data) return null
+      return this.simulateSpots[this.sliderValue]
+    },
+    // Google Maps 中心點
+    googleMapsCenter () {
+
+      if(!this.enable) return this.current // 若禁用模擬器則回傳 真實GPS位置
+      else if (!this.data) return { lat: 0, lng: 0 }  // 若尚未取得模擬點列表
+      return this.simulateCurrent // 當前模擬 GPS 位置
     }
+  },
+  watch: {
+    simulateCurrent (value) {
+      if(this.counter++ <= 0) return
+      if(this.enable)
+        this.sendSimulatePosition(value)
+    },
   },
   components: {
     VueSlider
@@ -287,5 +166,4 @@ export default {
 
 .controller
   margin-top: .5rem
-  font-size: 1rem
 </style>

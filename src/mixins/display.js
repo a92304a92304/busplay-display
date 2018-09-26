@@ -13,7 +13,6 @@ const display = {
       debugMode: false,    // 是否顯示debug panel
       ratio: [16, 9],      // 顯示比例
       route: null,         // 原始路線資料
-      direction: `go`,     // 行駛方向 預設為`去程`
       data: null,          // 處理過後 要傳給顯示屏的資料
       marquee: null,       // 跑馬燈內容
       clock: {
@@ -66,18 +65,28 @@ const display = {
       this.ratio = [w, h]
       this.setWidthHeight()
     },
-    // 根據網址參數取得行駛方向 
-    setDirection () {
-      this.direction = this.$route.query.direction || `go`
-    }
   },
   computed: {
+    routeId () {
+      const id = this.$route.params.id
+      return (id === `demo`) ? id : parseInt(id)
+    },
     areaStyle () {
       return {
         width: `${this.width}px`,
         height: `${this.height}px`,
       }
     },
+    // 行駛方向 預設為`去程`
+    direction () {
+      return this.$route.query.direction || `go`
+    },
+    positionOrigin () {
+      return this.$route.query.position || `gps`
+    },
+    enableSimulator () {
+      return (this.positionOrigin === `simulator`)
+    }
   },
   beforeDestroy () {
     this.stopGps()

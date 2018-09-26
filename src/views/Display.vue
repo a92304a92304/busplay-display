@@ -47,8 +47,12 @@ main
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
       button.btn.btn-warning(@click='initRoute()') reset route
 
-  .debug.simulator(v-if='debugMode === 2 &&route && position')
-    Simulator(:route='route' :position='position')
+  .debug.simulator(v-show='debugMode === 1')
+    div
+      | enable simulator :
+      //- input(type='checkbox' v-model='enableSimulator')
+      |  {{ enableSimulator }}
+    Simulator(ref='sim' :routeId='routeId' :route='route' :position='position' :direction='direction' :enable='enableSimulator' @changed='setSimulatePosition' @reset='initRoute' )
 </template>
 
 <script>
@@ -65,15 +69,19 @@ import gps from '@/assets/js/gps'
 import route from '@/assets/js/route'
 import carouselController from '@/assets/js/carousel'
 
-
 import demoRoute from '@/assets/js/demoRoute'
+
+const spotDuration = 7000  // 景點播放時間
+const adDuration = 5000    // 宣導廣告播放時間
 
 export default {
   name: 'Display',
   data () {
     return {
-      debugMode: 2,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
+      debugMode: 1,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
+      //
       position: null,      // 當前 gps 資訊
+      //
       current: 0,          // 當前站 index
       gpsTimer: null,      // 儲存gps timer的id
       watchId: null,
@@ -90,16 +98,27 @@ export default {
   },
   mounted () {
     const vm = this
-    const routeId = vm.$route.params.id
+
     vm.setTime()
     vm.fetchWeather()
     vm.setWindow()
-    vm.setDirection()
 
-    vm.fetchRoute(routeId, vm.direction).then(() => {   // 取得路線 data
-      vm.startGps()
-    })
-
+    if (!vm.enableSimulator) {
+      (async () => {
+        const position = await gps.getPosition()  // 取得初始位置
+        await vm.fetchRoute(vm.routeId, vm.direction, position)  // 取得路線 data
+        vm.startGps()
+      })()
+    } else {
+      (async () => {
+        const position = await vm.$refs.sim.fetch()
+        await vm.fetchRoute(vm.routeId, vm.direction, {
+          latitude: position.lat,
+          longitude: position.lng,
+          accuracy: 10,
+        })
+      })()
+    }
   },
   methods: {
     // 設定當前時間
@@ -117,33 +136,40 @@ export default {
     },
     // 停止定時取得GPS
     stopGps () {
+      // for `getCurrentPosition`
       clearInterval(this.gpsTimer)
       this.gpsTimer = null
+
+      // for `watchPosition`
       navigator.geolocation.clearWatch(this.watchId)
+      this.watchId = null
     },
     // 取得GPS
     setGps () {
       const vm = this
 
-      // gps.getPosition().then((position) => {
-      //   vm.position = position
-      //   route.setCurrent(vm.route, position)
-      //   vm.current = vm.route.current.nextIndex
-      //   vm.setCarousel()
-      //   vm.setData()
-      // }).catch((e) => {
-      //   console.log(e)
-      // })
-
-      vm.watchId = gps.watchPosition((position) => {
-        vm.position = position
-        route.setCurrent(vm.route, position)
-        vm.current = vm.route.current.nextIndex
-        vm.setCarousel()
-        vm.setData()
-      })
+      if(!vm.watchId && !this.enableSimulator)
+        vm.watchId = gps.watchPosition(vm.handlePosition)
 
       return this.setGps
+    },
+    setSimulatePosition (position) {
+      if(this.enableSimulator)
+        this.handlePosition({
+          latitude: position.lat,
+          longitude: position.lng,
+          accuracy: 10,
+        })
+    },
+    handlePosition (position) {
+      const vm = this
+
+      vm.position = position
+
+      if (vm.route) route.setCurrent(vm.route, position)
+      vm.current = (vm.route) ? vm.route.current.nextIndex : 1
+      vm.setCarousel()
+      vm.setData()
     },
     setData () {
       if(!this.route) return
@@ -171,14 +197,16 @@ export default {
 
       this.data.stations = stations
     },
+    // 設定輪播訊息
     setCarousel () {
       const vm = this
+      if (!vm.route) return
+
       const info = vm.route.stations[this.current].info
-      const spotDuration = 7000
-      const adDuration = 5000
 
       this.carousels.length = 0 // 清空輪播訊息陣列
 
+      // 加入景點訊息
       if (info.spot.length) {
         vm.carousels.push({
           type: `spot`,
@@ -187,6 +215,7 @@ export default {
         })
       }
 
+      // 加入宣導廣告
       carouselController.get(vm.route).forEach(content => {
         vm.carousels.push({
           type: `ad`,
@@ -194,59 +223,15 @@ export default {
           duration: adDuration,
         })
       })
-
-      // const testAdImg = [`https://i.imgur.com/WEJUNI5.jpg`, `https://i.imgur.com/qcMD0zD.jpg`, `https://i.imgur.com/QZ7z7ao.jpg`]
-      // testAdImg.forEach((img) => {
-      //   vm.carousels.push({
-      //     type: `ad`,
-      //     content: {
-      //       title: { ch: null, en: null },
-      //       content: { ch: null, en: null },
-      //       img
-      //     },
-      //     duration: 5000,
-      //   })
-      // })
-      //
-      // vm.carousels.push({
-      //   type: `ad`,
-      //   content: {
-      //     title: {
-      //       ch: `乘車注意事項`,
-      //       en: `Notice`,
-      //     },
-      //     content: {
-      //       ch: `為了維護服務品質，請勿在車內吸煙、飲食、嚼食口香糖或檳榔，謝謝您的配合，祝您旅途愉快。`,
-      //       en: `Please do not smoke, eat, drink, chew gum or betel nut in the car. Have a nice trip.`
-      //     },
-      //     img: `https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/No_smoking_symbol.svg/2000px-No_smoking_symbol.svg.png`
-      //   },
-      //   duration: 5000,
-      // })
-      // vm.carousels.push({
-      //   type: `ad`,
-      //   content: {
-      //     title: {
-      //       ch: `博愛座`,
-      //       en: `Priority Seat`,
-      //     },
-      //     content: {
-      //       ch: `請優先讓位給老人、孕婦、行動不便者，及抱小孩的乘客。`,
-      //       en: `Priority to senior citizen, pregnant and passenger who is disabled or with child.`
-      //     },
-      //     img: `https://i.imgur.com/w30cXdK.jpg?博愛座`
-      //   },
-      //   duration: 5000,
-      // })
     },
     initRoute () {
       const vm = this
-      const routeId = vm.$route.params.id
-      vm.fetchRoute(routeId, vm.direction)
+
+      vm.fetchRoute(vm.routeId, vm.direction, vm.position)
     },
-    fetchRoute (id, direction = `go`) {
+    fetchRoute (id, direction = `go`, position) {
       return new Promise((resolve, reject) => {
-        route.fetchRoute(id, direction).then(val => {
+        route.fetchRoute(id, direction, position).then(val => {
           this.route = val
           this.marquee = val.marquee
           resolve()
@@ -255,15 +240,14 @@ export default {
     },
     // 從api取得天氣物件
     fetchWeather () {
-      const vm = this
-      gps.getPosition().then((position) => {
+      (async () => {
+        const position = await gps.getPosition()
         const url = `https://busplay-server.herokuapp.com/weather/${position.latitude}&${position.longitude}`
+        const weather = await $.get(url)
 
-        $.get(url, weather => {
-          if(weather.success) vm.clock.weather = weather.data
-        })
-        vm.weatherTimer = setTimeout(this.fetchWeather, 1000 * 60 * 10)
-      })
+        if(weather.success) this.clock.weather = weather.data
+        this.weatherTimer = setTimeout(this.fetchWeather, 1000 * 60 * 10)
+      })()
     },
     stopWeather () {
       clearInterval(this.weatherTimer)
@@ -272,13 +256,21 @@ export default {
       this.clockTimer = null
     },
     toggleDebugMode () {
-      const max = 3
+      const max = 2
       this.debugMode = ((this.debugMode + 1) + max) % max
     }
   },
   watch: {
     current () {
       this.setData()
+    },
+    enableSimulator (enable) {
+      if (this.enable) {
+        this.stopGps()
+      } else {
+        this.startGps()
+      }
+      this.initRoute()
     },
   },
   mixins: [display]
