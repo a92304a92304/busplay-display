@@ -1,12 +1,12 @@
 <template lang="pug">
 div
-  gmap-map.google-map(:center='googleMapsCenter' :zoom='14' :options='mapOptions' v-if='route')
+  gmap-map.google-map(:center='googleMapsCenter' :zoom='15' :options='mapOptions')
     //- 各站點
-    gmap-marker.station(:key='`station${index}`' v-for='(i, index) in route.stations' :position='i.location' :icon='getStationIcon(i, index)')
+    gmap-marker.station(:key='`station${index}`' v-for='(i, index) in stations' :position='i.location' :icon='getStationIcon(i, index)')
     //- 當前位置
     gmap-marker.current(:position='current' :icon='busIcon')
     //- 各站點連接直線
-    gmap-polyline(:options="stationLineOptions" :path='route.stations.map(val => val.location)')
+    gmap-polyline(:options="stationLineOptions" :path='stations.map(val => val.location)')
     //----------
     //- gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpots' :position='i')
     //- gmap-polyline(:options="simulateLineOptions" :path='simulateSpots')
@@ -22,6 +22,7 @@ div
         VueSlider(v-model='sliderValue' :min='sliderMin' :max='sliderMax' :tooltip='`hover`' :speed='0' :bgStyle='{ background: `white` }' :real-time='true')
       .col-auto
         div(style={ minWidth: `2rem` }) {{ ((sliderValue / sliderMax) * 100).toFixed(0) }} %
+    div(v-else-if='!enable')
     div(v-else) Loading...
 </template>
 
@@ -63,8 +64,8 @@ export default {
   methods: {
     // 取得站 Marker 的 Icon
     getStationIcon (station, index) {
-      let url = `/img/marker-default.png`
-      if (!this.route || !this.position) return null
+      let url = `/img/marker-default.png` // 預設 icon
+      if (!this.position) return url
 
       if(index === this.route.current.nextIndex) url = `/img/marker-current.png`
       else if (station.passed) url = `/img/marker-passed.png`
@@ -91,8 +92,8 @@ export default {
       this.$emit(`reset`)
     },
     fetch () {
-      let url = `http://busplay-server.herokuapp.com/simulator/${this.routeId}`
-      url = `http://busplay-server.herokuapp.com/simulator/4` // For Testing
+      let url = `https://busplay-server.herokuapp.com/simulator/${this.routeId}`
+      url = `https://busplay-server.herokuapp.com/simulator/4` // For Testing
 
       return new Promise((resolve, reject) => {
         $.ajax({
@@ -104,7 +105,7 @@ export default {
             this.init()
             resolve(this.simulateCurrent)
           },
-          error: e => console.log(`取得模擬行車路線失敗`),
+          error: e => reject(e),
         })
       })
     },
@@ -140,7 +141,11 @@ export default {
       if(!this.enable) return this.current // 若禁用模擬器則回傳 真實GPS位置
       else if (!this.data) return { lat: 0, lng: 0 }  // 若尚未取得模擬點列表
       return this.simulateCurrent // 當前模擬 GPS 位置
-    }
+    },
+    // 車站列表
+    stations () {
+      return (this.route) ? this.route.stations : []
+    },
   },
   watch: {
     simulateCurrent (value) {

@@ -11,8 +11,12 @@ main
         h2 位置取得方式
       .col-12
         .btn-group
-          button.btn.btn-secondary(:class='positionBtnClass(`gps`)' @click='config.position = `gps`') 裝置 GPS
-          button.btn.btn-secondary(:class='positionBtnClass(`simulator`)' @click='config.position = `simulator`') 行車模擬器
+          button.btn.btn-secondary(:class='positionBtnClass(`gps`)' @click='config.position = `gps`')
+            fa.mr-2(icon='circle' :class='positionBtnLightClass(`gps`)')
+            | 裝置 GPS
+          button.btn.btn-secondary(:class='positionBtnClass(`simulator`)' @click='config.position = `simulator`')
+            fa.mr-2(icon='circle' :class='positionBtnLightClass(`simulator`)')
+            | 行車模擬器
     RouteList(:config='config').mb-5
 </template>
 
@@ -23,7 +27,7 @@ export default {
   name: 'Index',
   data () {
     return {
-      config: { position: `gps` }
+      config: { position: `simulator` }
     }
   },
   components:{
@@ -35,6 +39,9 @@ export default {
   methods: {
     positionBtnClass (value) {
       return (value == this.config.position) ? `btn-light` : `btn-outline-light`
+    },
+    positionBtnLightClass (value) {
+      return (value == this.config.position) ? `text-success` : ``
     }
   }
 }

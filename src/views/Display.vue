@@ -48,10 +48,6 @@ main
       button.btn.btn-warning(@click='initRoute()') reset route
 
   .debug.simulator(v-show='debugMode === 1')
-    div
-      | enable simulator :
-      //- input(type='checkbox' v-model='enableSimulator')
-      |  {{ enableSimulator }}
     Simulator(ref='sim' :routeId='routeId' :route='route' :position='position' :direction='direction' :enable='enableSimulator' @changed='setSimulatePosition' @reset='initRoute' )
 </template>
 
@@ -71,15 +67,15 @@ import carouselController from '@/assets/js/carousel'
 
 import demoRoute from '@/assets/js/demoRoute'
 
-const spotDuration = 7000  // 景點播放時間
-const adDuration = 5000    // 宣導廣告播放時間
+const spotDuration = 7 * 1000  // 景點播放時間
+const adDuration = 5 * 1000    // 宣導廣告播放時間
+const gpsTimerInterval = 10 * 1000  // 取得 gps 的間隔
 
 export default {
   name: 'Display',
   data () {
     return {
       debugMode: 1,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
-      //
       position: null,      // 當前 gps 資訊
       //
       current: 0,          // 當前站 index
@@ -87,7 +83,6 @@ export default {
       watchId: null,
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
-      gpsTimerInterval: 10 * 1000,  // 取得 gps 的間隔
       carousels: [],
     }
   },
@@ -112,11 +107,9 @@ export default {
     } else {
       (async () => {
         const position = await vm.$refs.sim.fetch()
-        await vm.fetchRoute(vm.routeId, vm.direction, {
-          latitude: position.lat,
-          longitude: position.lng,
-          accuracy: 10,
-        })
+        vm.setSimulatePosition(position)
+        await vm.fetchRoute(vm.routeId, vm.direction, vm.position)
+        vm.setSimulatePosition(position)
       })()
     }
   },
@@ -131,7 +124,7 @@ export default {
     },
     // 開始定時取得GPS
     startGps () {
-      // this.gpsTimer = setInterval(this.setGps(), this.gpsTimerInterval)
+      // this.gpsTimer = setInterval(this.setGps(), gpsTimerInterval)
       this.setGps()
     },
     // 停止定時取得GPS
@@ -163,7 +156,6 @@ export default {
     },
     handlePosition (position) {
       const vm = this
-
       vm.position = position
 
       if (vm.route) route.setCurrent(vm.route, position)
