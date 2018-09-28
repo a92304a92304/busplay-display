@@ -37,12 +37,12 @@
             span.en(v-if='bottomLangs[bottomLang] === `en`') min(s)
             span.ch(v-else) 分
         ul.stations
-          li(v-for='i in 7' :class='{passed: i == 1}')
+          li(v-for='i in 7' :class='{ passed: i == 1 }')
             .name(:class='{ latin: bottomLangs[bottomLang] === `en` }')
               span {{ data.stations[i - 1][bottomLangs[bottomLang]] }}
             .time
               span.text
-                span(v-show='i != 1') {{ i }}
+                span(v-show='i != 1') {{ data.times[i - 1] }}
               span.arrow(v-if='i==1' :class='{ active: 1 }') #[.shape-arrow-left]
             .info
               ul #[li]

@@ -8,7 +8,7 @@ div
     //- 各站點連接直線
     gmap-polyline(:options="stationLineOptions" :path='stations.map(val => val.location)')
     //----------
-    //- gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpots' :position='i')
+    gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpots' :position='i')
     //- gmap-polyline(:options="simulateLineOptions" :path='simulateSpots')
     gmap-marker(:icon='{ url: `/img/marker-simulator.png` }' :position='simulateCurrent')
   //- 遙控器
@@ -93,7 +93,8 @@ export default {
     },
     fetch () {
       let url = `https://busplay-server.herokuapp.com/simulator/${this.routeId}`
-      url = `https://busplay-server.herokuapp.com/simulator/4` // For Testing
+
+      if(this.routeId === `demo`) url = `https://busplay-server.herokuapp.com/simulator/4`
 
       return new Promise((resolve, reject) => {
         $.ajax({

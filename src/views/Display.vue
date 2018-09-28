@@ -45,7 +45,8 @@ main
     .btn-group.btn-group-sm
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
       button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
-      button.btn.btn-warning(@click='initRoute()') reset route
+    br
+    button.btn.btn-sm.btn-warning(@click='initRoute()') reset route
 
   .debug.simulator(v-show='debugMode === 1')
     Simulator(ref='sim' :routeId='routeId' :route='route' :position='position' :direction='direction' :enable='enableSimulator' @changed='setSimulatePosition' @reset='initRoute' )
@@ -158,7 +159,10 @@ export default {
       const vm = this
       vm.position = position
 
-      if (vm.route) route.setCurrent(vm.route, position)
+      if (vm.route) {
+        route.setCurrent(vm.route, position)
+        vm.route.times = route.calcEstTime(vm.route)
+      }
       vm.current = (vm.route) ? vm.route.current.nextIndex : 1
       vm.setCarousel()
       vm.setData()
@@ -169,6 +173,7 @@ export default {
       const r = this.route
       const current = this.current
       const stations = []
+      const times = []
 
       // 將資料轉換為TokyoMetro接收的格式
       this.data = {
@@ -184,10 +189,13 @@ export default {
       for (let i = 0; i < 7; i++) {
         const num = i + current - 1
         const s = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.stations[num].name : {}
+        const t = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.times[num] : 0
         stations.push(s)
+        times.push(t)
       }
 
       this.data.stations = stations
+      this.data.times = times
     },
     // 設定輪播訊息
     setCarousel () {

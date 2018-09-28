@@ -2,7 +2,9 @@ const $ = require('jquery')
 const gps = require('./gps')
 const demoRoute = require('./demoRoute')
 
-const distanceOffset = 25
+const distanceOffset = 30   // 移動距離大於此值才算數
+const meterPerMin = 300     // 估計每分鐘行駛的公尺數
+
 
 const fetchRoute = (id, direction = `go`, position = null) => {
   if (id === `demo`)
@@ -116,9 +118,43 @@ const setCurrent = (data, position) => {
   })
 }
 
+// 計算預估的行駛時間
+const calcEstTime = (route) => {
+  const current = route.current
+  const stations = route.stations
+
+  const nextIndex = current.nextIndex
+  const nextDistance = current.nextMinDistance
+
+  // 預估出各站距離下一站的到站時間 (若已經過則為0)
+  const timeList = stations.map((station, index) => {
+    let min = 0
+    if (index === nextIndex) {  // 本站
+      min = (nextDistance / meterPerMin)
+    } else if (index === stations.length - 1) {   // 最終站
+      min = 0
+    } else if (index >= nextIndex) {  // 其他下一站
+      min = (station.distance / meterPerMin)
+    }
+    return min
+  })
+
+  // 將陣列內的值和前一個值相加
+  timeList.forEach((time, index, list) => {
+    const prev = (index !== 0 ) ? list[index - 1] : 0
+    list[index] = prev + time
+  })
+
+  // 將陣列內的值無條件進位
+  timeList.forEach((time, index, list) => list[index] = Math.ceil(time))
+
+  return timeList
+}
+
 
 export default {
   fetchRoute,
   initNewRoute,
   setCurrent,
+  calcEstTime,
 }

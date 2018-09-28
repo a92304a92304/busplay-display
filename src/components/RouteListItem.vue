@@ -33,7 +33,11 @@ export default {
   },
   methods: {
     gotoRoute (id, direction = `go`) {
-      this.$router.push(`/display/${id}?direction=${direction}&position=${this.config.position}`)
+      this.$router.push({
+        name: `Display`,
+        params: { id },
+        query: { direction, position: this.config.position },
+      })
     }
   }
 }
