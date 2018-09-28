@@ -189,7 +189,7 @@ export default {
       for (let i = 0; i < 7; i++) {
         const num = i + current - 1
         const s = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.stations[num].name : {}
-        const t = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.times[num] : 0
+        const t = (num >= 0 && num < r.stations.length && r.stations[num]) ? r.times[num] : null
         stations.push(s)
         times.push(t)
       }

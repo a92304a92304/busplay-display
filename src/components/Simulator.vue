@@ -75,7 +75,8 @@ export default {
     play () {
       if (this.timer === null) {
         this.timer = setInterval(() => {
-          this.sliderValue++
+          if (this.sliderValue >= this.sliderMax - 1) this.pause()
+          else this.sliderValue++
         }, playSpeed)
       }
     },
