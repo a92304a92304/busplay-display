@@ -19,9 +19,10 @@ const get = (route) => {
         }
         break
       case 2:  // 第二個類型: 和下一站距離 ＿ 公尺，進行廣播。
-        if (stations[route.current.nextIndex].distance >= rule.distance) {
-          result.push(rule.content)
-        }
+        if(route.current.nextIndex - 1 >= 0 )
+          if (stations[route.current.nextIndex - 1].distance >= rule.distance) {
+            result.push(rule.content)
+          }
         break
     }
   })

@@ -49,7 +49,7 @@
 
       template(v-else)
         //- 景點
-        .spot(v-if='carousels[carousel - 1].type === `spot`')
+        .spot(v-if='getCarouselType() === `spot`')
           h4.headline-enter(:style='{ borderColor: data.color }') 周邊資訊 / Information
           .box
             .row.list
@@ -62,7 +62,7 @@
                     .ch {{ i.name.ch }}
                     .en {{ i.name.en }}
         //- 廣告(輪播)
-        .ad(v-for='(i, index) in carousels' :key='index' v-if='index === carousel - 1 && carousels[carousel - 1].type === `ad`')
+        .ad(v-for='(i, index) in carousels' :key='index' v-if='index === carousel - 1 && getCarouselType() === `ad`')
           //- 僅圖片的輪播
           .ad-img(v-if='!getCarouselContent(index).title.ch')
             img.fade-in-left(:src='getCarouselContent(index).img')
@@ -251,7 +251,12 @@ export default {
       if (obj.type === `spot`) return `spot`
       else if (!obj.content.content.ch) return `圖`
       return `ad`
-    }
+    },
+    getCarouselType () {
+      return (this.carousels[this.carousel - 1])
+        ? this.carousels[this.carousel - 1].type
+        : null
+    },
   },
   computed: {
     topStyle () {

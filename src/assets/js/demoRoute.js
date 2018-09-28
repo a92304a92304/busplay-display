@@ -638,54 +638,6 @@ const route = {
                 "en": "Wellcome Department Store"
               },
               "icon": "shopping-cart"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點",
-                "en": "This is a spot"
-              },
-              "icon": "map-marker"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點地點地點地點",
-                "en": "This is a spotspot"
-              },
-              "icon": "map-marker"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點地點地點",
-                "en": "This isspotspot a spotspot"
-              },
-              "icon": "map-marker"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點地點地點",
-                "en": "This isspotspot a spotspot"
-              },
-              "icon": "map-marker"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點地點地點",
-                "en": "This isspotspot a spotspot"
-              },
-              "icon": "map-marker"
-            },
-            {
-              "spotId": 2,
-              "name": {
-                "ch": "地點地點地點",
-                "en": "This isspotspot a spotspot"
-              },
-              "icon": "map-marker"
             }
           ]
         },
