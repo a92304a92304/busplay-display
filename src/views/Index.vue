@@ -27,7 +27,7 @@ export default {
   name: 'Index',
   data () {
     return {
-      config: { position: `simulator` }
+      config: { position: `gps` }
     }
   },
   components:{

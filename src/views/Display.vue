@@ -5,51 +5,52 @@ main
 
   //- Debug 資訊
   //- 返回按鈕
-  .debug.back(v-if='debugMode')
-    router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
+  transition(name='left-top')
+    .debug.back(v-if='debugMode')
+      router-link.text-light(to='/' title='返回列表') #[fa(icon='arrow-circle-left' size='4x')]
 
   //- 站列表
-  .debug.stations(v-if='debugMode === 1')
-    .list
-      table(v-if='route')
-        tbody
-          tr(v-for='(i, index) in route.stations' :class='{ active: index === current, passed: i.passed }')
-            td #[fa(icon='arrow-right' v-if='index === current')] {{ i.name.ch }}
-            td 距下 {{ i.distance }}m
+  transition(name='right-top')
+    .debug.stations(v-if='debugMode === 1')
+      .list
+        table(v-if='route')
+          tbody
+            tr(v-for='(i, index) in route.stations' :class='{ active: index === current, passed: i.passed }')
+              td #[fa(icon='arrow-right' v-if='index === current')] {{ i.name.ch }}
+              td 距下 {{ i.distance }}m
 
   //- 前後站和 gps 資訊
-  .debug.current(v-if='debugMode === 1 && route')
-    div(v-if='route.current.prevIndex != null')
-      fa(icon='arrow-left')
-      span.badge.badge-dark {{ route.current.prevIndex }}
-      | {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
-    div(v-if='route.current.nextIndex != null')
-      fa(icon='arrow-right')
-      span.badge.badge-dark {{ route.current.nextIndex }}
-      | {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
-    .text-light(v-if='position')
-      div #[span.badge.badge-light lat] {{ position.latitude }}
-      div #[span.badge.badge-light lng] {{ position.longitude }}
-      div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
+  transition(name='right-top')
+    .debug.current(v-if='debugMode === 1 && route')
+      div(v-if='route.current.prevIndex != null')
+        fa(icon='arrow-left')
+        span.badge.badge-dark {{ route.current.prevIndex }}
+        | {{ route.stations[route.current.prevIndex].name.ch }} : {{ route.current.prevDistance }}m
+      div(v-if='route.current.nextIndex != null')
+        fa(icon='arrow-right')
+        span.badge.badge-dark {{ route.current.nextIndex }}
+        | {{ route.stations[route.current.nextIndex].name.ch }} : {{ route.current.nextMinDistance }}m
+      .text-light(v-if='position')
+        div #[span.badge.badge-light lat] {{ position.latitude }}
+        div #[span.badge.badge-light lng] {{ position.longitude }}
+        div #[span.badge.badge-warning 誤差] {{ position.accuracy }}m
 
   //- debug 按鈕
-  .debug.btn(v-if='debugMode === 1')
-    .btn-group.btn-group-sm.mb-1
-      button.btn.btn-primary(@click='setRatio()') 16:9
-      button.btn.btn-primary(@click='setRatio(4,3)') 4:3
-      button.btn.btn-dark(@click='enterFullScreen()') 全屏
-    .btn-group.btn-group-sm('hidden')
-      button.btn.btn-primary(@click='current--') #[fa(icon='angle-left')]
-      button.btn.btn-primary(@click='current++') #[fa(icon='angle-right')]
-    br
-    .btn-group.btn-group-sm
-      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
-      button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
-    br
-    button.btn.btn-sm.btn-warning(@click='initRoute()') reset route
-
-  .debug.simulator(v-show='debugMode === 1')
-    Simulator(ref='sim' :routeId='routeId' :route='route' :position='position' :direction='direction' :enable='enableSimulator' @changed='setSimulatePosition' @reset='initRoute' )
+  transition(name='right-bottom')
+    .debug.btn(v-if='debugMode === 1')
+      .btn-group.btn-group-sm.mb-1
+        button.btn.btn-primary(@click='setRatio()') 16:9
+        button.btn.btn-primary(@click='setRatio(4,3)') 4:3
+        button.btn.btn-dark(@click='enterFullScreen()') 全屏
+      br
+      .btn-group.btn-group-sm
+        button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
+        button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
+      br
+      button.btn.btn-sm.btn-warning(@click='initRoute()') reset route
+  transition(name='left-bottom')
+    .debug.simulator(v-show='debugMode === 1')
+      Simulator(ref='sim' :routeId='routeId' :route='route' :position='position' :direction='direction' :enable='enableSimulator' @changed='setSimulatePosition' @reset='initRoute' )
 </template>
 
 <script>
@@ -57,7 +58,7 @@ import $ from 'jquery'
 import screenfull from 'screenfull'
 import moment from 'moment'
 
-import TokyoMetro from '@/components/TokyoMetro'
+import TokyoMetro from '@/template/TokyoMetro'
 import ScrollText from '@/components/ScrollText'
 import Simulator from '@/components/Simulator'
 
@@ -226,7 +227,7 @@ export default {
     },
     initRoute () {
       const vm = this
-
+      console.log(`已重設`)
       vm.fetchRoute(vm.routeId, vm.direction, vm.position)
     },
     fetchRoute (id, direction = `go`, position) {

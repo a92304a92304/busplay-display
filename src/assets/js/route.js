@@ -11,9 +11,7 @@ const fetchRoute = (id, direction = `go`, position = null) => {
     return new Promise((resolve, reject) => {
       const data = Object.assign({}, demoRoute.route)
 
-      initNewRoute(data, direction, position).then(() => {
-        resolve(data)
-      })
+      initNewRoute(data, direction, position).then(() => resolve(data))
     })
   else
     return new Promise((resolve, reject) => {

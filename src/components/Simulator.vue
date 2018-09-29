@@ -7,23 +7,22 @@ div
     gmap-marker.current(:position='current' :icon='busIcon')
     //- 各站點連接直線
     gmap-polyline(:options="stationLineOptions" :path='stations.map(val => val.location)')
-    //----------
-    gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpots' :position='i')
-    //- gmap-polyline(:options="simulateLineOptions" :path='simulateSpots')
-    gmap-marker(:icon='{ url: `/img/marker-simulator.png` }' :position='simulateCurrent')
+    //- 模擬行車點
+    gmap-marker(:key='`s${index}`' :icon='{ url: `/img/marker-simulator.png` }' v-for='(i, index) in simulateSpotsForGoogleMaps' :position='i')
   //- 遙控器
   .controller
     .row.align-items-center.no-gutters(v-if='data && enable')
       .col-auto
-        fa.mr-2(icon='fast-backward' @click='reset()' title='歸零')
-        fa.mr-2(icon='pause' @click='pause()' v-if='timer !== null' title='暫停')
-        fa.mr-2(icon='play' @click='play()' v-else title='播放')
+        a(href='#' @click='reset()' title='歸零') #[fa.mr-2(icon='fast-backward')]
+        a(href='#' @click='pause()' v-if='timer !== null' title='暫停') #[fa.mr-2(icon='pause')]
+        a(href='#' @click='play()' v-else title='播放') #[fa.mr-2(icon='play')]
+
       .col
         VueSlider(v-model='sliderValue' :min='sliderMin' :max='sliderMax' :tooltip='`hover`' :speed='0' :bgStyle='{ background: `white` }' :real-time='true')
       .col-auto
         div(style={ minWidth: `2rem` }) {{ ((sliderValue / sliderMax) * 100).toFixed(0) }} %
     div(v-else-if='!enable')
-    div(v-else) Loading...
+    div(v-else) #[fa(icon='spinner' spin)]
 </template>
 
 <script>
@@ -56,10 +55,6 @@ export default {
     enable: { type: Boolean, default: false },
   },
   mounted () {
-    // if (this.enable) {
-    //   this.fetch()
-    //   this.sendSimulatePosition(this.simulateCurrent)
-    // }
   },
   methods: {
     // 取得站 Marker 的 Icon
@@ -113,6 +108,9 @@ export default {
     },
     init () {
     },
+    setForDemo () {
+      // if(this.routeId === `demo`)
+    },
     // 向父組件傳遞模擬的 GPS 資訊
     sendSimulatePosition (position) {
       this.$emit(`changed`, position)
@@ -125,12 +123,23 @@ export default {
     },
     // 真實 GPS 位置
     current () {
-      if (!this.position) return { lat: 0, lng: 0 }
+      if (!this.position) return { lat: 25.0397526, lng: 121.5370866 }
       return { lat: this.position.latitude, lng: this.position.longitude }
     },
     // 取得模擬點列表
     simulateSpots () {
       return (this.data) ? this.data.stations[this.direction] : []
+    },
+    simulateSpotsForGoogleMaps () {
+      if (!this.data) return []
+      const numToShow = 10
+      const value = this.sliderValue
+      const max = this.sliderMax
+      const result = []
+      for (let i = value - numToShow; i < value + numToShow; i++) {
+        if (i >= 0 && i < max) result.push(this.simulateSpots[i])
+      }
+      return result
     },
     // 模擬 GPS 位置
     simulateCurrent () {
@@ -152,9 +161,12 @@ export default {
   watch: {
     simulateCurrent (value) {
       if(this.counter++ <= 0) return
-      if(this.enable)
-        this.sendSimulatePosition(value)
+      if(this.enable) this.sendSimulatePosition(value)
     },
+    // 若偵測到倒轉播放則重設
+    sliderValue (value, old) {
+      if(value < old) this.$emit(`reset`)
+    }
   },
   components: {
     VueSlider
@@ -168,9 +180,15 @@ export default {
 @import "~bootswatch/dist/lux/bootswatch"
 
 .google-map
-  width: 30rem
-  height: 20rem
+  width: 24rem
+  height: 18rem
 
 .controller
   margin-top: .5rem
+  font-size: .8rem
+  a
+    color: white
+    transition: color .2s
+    &:hover
+      color: $yellow
 </style>

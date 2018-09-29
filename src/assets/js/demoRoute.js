@@ -1787,7 +1787,7 @@ const route = {
     },
     {
       "condition": 2,
-      "distance": 400,
+      "distance": 100,
       "content": {
         "title": {
           "ch": "乘車注意事項",
@@ -1803,10 +1803,7 @@ const route = {
     }
   ],
   "marquee" : [
-    "剛剛去加油站加油，我跟工讀生說９２加１００，結果他回我等於１９２，哇幹，他應該沒被油槍打過吧",
-    "想起國中會考那年，我剛進考場才發現准考證忘記帶，正當我焦急的時候看到我爸氣喘吁吁的跑來爸：「你的准考證放在家裡了！」我感動的說：「謝謝，急死我了，快給我吧，要考試了！」這時我爸愣了一下「我不是說放在家裡了嗎？」",
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-    "有一次去女同學家, 推開門竟發現她在沙發上用震動棒......, 我兩相視了五秒突然震動棒沒了動靜, 她嬌羞的說：那個...沒電了...你能...過來幫我嗎？, 我吞了一口硾液 激動著點點頭~, 連忙跑到樓下超市給她買了一對金頂電池, 從那以後她再也沒理我 至今我都不明白到底我做錯什麼, 現在偶爾見面 她還是不理我 我也不好意思跟她提那電池28塊錢的事, 我估計她是不還錢所以才故意不理我..., 真沒想到她是這樣的人~ "
+    "臺北捷運公司秉持「提供安全、可靠、親切的運輸服務，追求永續發展」的企業使命，為持續建構一個更安全的捷運空間，針對初期通車路線共58個車站進行增設月臺門，且採用逐年建置陸續完工啟用方式；經過多年努力，最後一個車站土城站月臺門，於今年9月底建置完成加入車站營運，捷運路網所有車站均已設置月臺門，提供旅客更安全及舒適的候車環境。", "Entering its 12th year, the 2018 Taipei Jazz Music Festival will take place starting September 9 at the Jazz Plaza next to the Taipei Rapid Transit Corporation building. The event is organized by the Department of Cultural Affairs."
   ],
   "RID" : 2,
   "distanceMax" : 3900,

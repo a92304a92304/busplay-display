@@ -65,5 +65,42 @@ main
     text-align: right
 
   &.simulator
-    bottom: 1rem
+    bottom: 0rem
     left: 0rem
+
+$animation-duration: .3s
+$animation-offset: 3rem
+.left-bottom-enter-active, .left-bottom-leave-active, .left-top-enter-active, .left-top-leave-active, .right-bottom-enter-active, .right-bottom-leave-active, .right-top-enter-active, .right-top-leave-active,
+  transition: opacity $animation-duration, transform $animation-duration
+
+.left-bottom-enter
+  opacity: 0
+  transform: translate(-$animation-offset, $animation-offset)
+
+.left-bottom-leave-to
+  opacity: 0
+  transform: translate(-$animation-offset, $animation-offset)
+
+.left-top-enter
+  opacity: 0
+  transform: translate(-$animation-offset, -$animation-offset)
+
+.left-top-leave-to
+  opacity: 0
+  transform: translate(-$animation-offset, -$animation-offset)
+
+.right-bottom-enter
+  opacity: 0
+  transform: translate($animation-offset, $animation-offset)
+
+.right-bottom-leave-to
+  opacity: 0
+  transform: translate($animation-offset, $animation-offset)
+
+.right-top-enter
+  opacity: 0
+  transform: translate($animation-offset, -$animation-offset)
+
+.right-top-leave-to
+  opacity: 0
+  transform: translate($animation-offset, -$animation-offset)

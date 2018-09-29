@@ -94,9 +94,9 @@ import colorDetector from '@/assets/js/colorDetector.js'
 import ScrollText from '@/components/ScrollText'
 import $ from 'jquery'
 
-const mainStationInterval =  4 * 1000   // 主車站更換語言間隔
-const bottomInterval      = 10 * 1000   // 底部更換語言間隔
-const routeDuration       = 20 * 1000   // 顯示路線的維持時間
+const mainStationInterval = 4 * 1000   // 主車站更換語言間隔
+const bottomInterval      = 15 * 1000   // 底部更換語言間隔
+const routeDuration       = bottomInterval * 2   // 顯示路線的維持時間
 
 export default {
   name: 'TokyoMetro',
@@ -114,7 +114,7 @@ export default {
       //
       bottomLang: 0,              // 當前底部語言index
       bottomLangs: [`ch`, `en`],  // 底部語言列表
-      bottomTimer: null,
+      bottomTimer: null,          // 儲存切換底部timer id
       //
       currMarquee: 0,
       carousel: 0,
