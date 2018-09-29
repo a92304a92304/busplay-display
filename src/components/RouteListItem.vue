@@ -1,6 +1,6 @@
 <template lang="pug">
 .card.item.mb-2(:style='{ borderLeftColor: route.color, animationDelay: `${index * 0.05}s` }')
-  .card-body(@click.stop='gotoRoute(route.id)')
+  .card-body(@click.stop='gotoRoute(route.RID)')
     .row.align-items-center
       .col.col-md-auto.text-left.text-md-center
         .name.mr-3.mr-md-0.d-inline-block.d-md-block {{ route.name.ch }}
