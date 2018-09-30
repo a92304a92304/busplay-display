@@ -80,10 +80,11 @@
 
         .carousel-bar(v-if='debugMode == 1')
           .item(v-for='(i, index) in carousels' :class='{ active: index === carousel - 1 }') {{ getCarouselBarText(i) }}
-
+    //- 載入中的等待畫面
     template(v-else)
       .logo-banner
-        img.logo(src='@/assets/img/logo-dark.svg')
+        //- img.logo(src='@/assets/img/logo-dark.svg')
+        fa(icon='circle-notch' size='2x' spin)
 
   .marquee(v-if='isMarqueeShow')
     ScrollText(ref='marquee' :htmlFontSize='htmlFontSize' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}

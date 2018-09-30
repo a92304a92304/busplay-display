@@ -22,7 +22,7 @@ div
       .col-auto
         div(style={ minWidth: `2rem` }) {{ ((sliderValue / sliderMax) * 100).toFixed(0) }} %
     div(v-else-if='!enable')
-    div(v-else) #[fa(icon='spinner' spin)]
+    div(v-else) #[fa(icon='circle-notch' spin)]
 </template>
 
 <script>

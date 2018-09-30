@@ -77,7 +77,7 @@ export default {
   name: 'Display',
   data () {
     return {
-      debugMode: 1,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
+      debugMode: 0,        // Debug Panel: 0: 不顯示, 1: Debug 資訊, 2: 地圖
       position: null,      // 當前 gps 資訊
       //
       current: 0,          // 當前站 index
@@ -100,18 +100,21 @@ export default {
     vm.fetchWeather()
     vm.setWindow()
 
-    if (!vm.enableSimulator) {
+
+    if (!vm.enableSimulator) {  // 若使用真實 gps
       (async () => {
         const position = await gps.getPosition()  // 取得初始位置
         await vm.fetchRoute(vm.routeId, vm.direction, position)  // 取得路線 data
         vm.startGps()
       })()
-    } else {
+
+    } else {  // 若使用行車模擬器
       (async () => {
         const position = await vm.$refs.sim.fetch()
         vm.setSimulatePosition(position)
         await vm.fetchRoute(vm.routeId, vm.direction, vm.position)
         vm.setSimulatePosition(position)
+        vm.debugMode = 1
       })()
     }
   },

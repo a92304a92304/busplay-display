@@ -17,7 +17,7 @@
       .col-auto.direction-btn.mt-3.mt-md-0
         button.btn.btn-primary(@click.stop='gotoRoute(route.RID, `go`)') 去程
         button.btn.btn-primary(@click.stop='gotoRoute(route.RID, `back`)') 返程
-        span.badge.badge-primary.ml-2 {{ route.RID }}
+        //- span.badge.badge-primary.ml-2 {{ route.RID }}
 </template>
 
 <script>

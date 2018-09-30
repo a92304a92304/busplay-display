@@ -7,10 +7,10 @@ section
     | 線上路線列表
     a.text-light(href='#' @click.stop.prevent='fetchList()') #[fa.ml-3(icon='sync-alt' title='重新載入列表')]
 
-  .loading(v-if='!routes') #[fa(icon='spinner' spin)]
+  .loading(v-if='!routes') #[fa(icon='circle-notch' spin)]
   RouteListItem.fade-enter-active(v-for='(route, index) in routes' :route='route' :index='index' :key='index' :config='config')
 
-  .text-center(v-if='routes')
+  //- .text-center(v-if='routes')
     button.btn.btn-outline-secondary.my-3(@click='gotoTop()')
       fa.mx-5(icon='caret-up' size="2x")
 </template>
