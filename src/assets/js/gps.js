@@ -38,7 +38,6 @@ const watchPosition = (success) => {
   return watchId
 }
 
-// navigator.geolocation.clearWatch(watchId)
 
 // 取得距離最近的 index
 const getNearest = (current, stations) => {
