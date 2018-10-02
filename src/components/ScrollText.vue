@@ -8,7 +8,7 @@ ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
 ```
 
 ## 參數
-- px-per-sec: 每秒滾動多少px
+- remPerSec: 每秒滾動多少px
 - start-delay: 開始滾動前等待的秒數
 - end-delay: 結束滾動後等待的秒數
 - noScrollDelay: 當不需要滾動時，等待的秒數
@@ -27,8 +27,6 @@ ScrollText(:px-per-sec='200' :start-delay='1' :end-delay='1')
 </template>
 
 <script>
-import _ from 'lodash'
-
 export default {
   name: 'ScrollText',
   data () {

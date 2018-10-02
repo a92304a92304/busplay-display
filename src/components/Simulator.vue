@@ -88,9 +88,9 @@ export default {
       this.$emit(`reset`)
     },
     fetch () {
-      let url = `https://busplay-server.herokuapp.com/simulator/${this.routeId}`
+      let url = `https://busplay-server.herokuapp.com/display/simulator/${this.routeId}`
 
-      if(this.routeId === `demo`) url = `https://busplay-server.herokuapp.com/simulator/4`
+      if(this.routeId === `demo`) url = `https://busplay-server.herokuapp.com/display/simulator/4`
 
       return new Promise((resolve, reject) => {
         $.ajax({

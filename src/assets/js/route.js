@@ -10,12 +10,11 @@ const fetchRoute = (id, direction = `go`, position = null) => {
   if (id === `demo`)
     return new Promise((resolve, reject) => {
       const data = Object.assign({}, demoRoute.route)
-
       initNewRoute(data, direction, position).then(() => resolve(data))
     })
   else
     return new Promise((resolve, reject) => {
-      const url = `https://busplay-server.herokuapp.com/OneRouteXQ/${id}`
+      const url = `https://busplay-server.herokuapp.com/display/route/${id}`
       $.ajax({
         url,
         type: 'GET',
@@ -145,7 +144,6 @@ const calcEstTime = (route) => {
 
   // 將陣列內的值無條件進位
   timeList.forEach((time, index, list) => list[index] = Math.ceil(time))
-
   return timeList
 }
 

@@ -246,9 +246,9 @@ export default {
     fetchWeather () {
       (async () => {
         const position = await gps.getPosition()
-        const url = `https://busplay-server.herokuapp.com/weather/${position.latitude}&${position.longitude}`
+        const url = `https://busplay-server.herokuapp.com/display/weather?lat=${position.latitude}&lng=${position.longitude}`
         const weather = await $.get(url)
-
+        console.log(url)
         if(weather.success) this.clock.weather = weather.data
         this.weatherTimer = setTimeout(this.fetchWeather, 1000 * 60 * 10)
       })()
