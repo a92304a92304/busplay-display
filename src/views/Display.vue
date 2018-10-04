@@ -230,7 +230,6 @@ export default {
     },
     initRoute () {
       const vm = this
-      console.log(`已重設`)
       vm.fetchRoute(vm.routeId, vm.direction, vm.position)
     },
     fetchRoute (id, direction = `go`, position) {

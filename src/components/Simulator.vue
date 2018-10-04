@@ -54,8 +54,6 @@ export default {
     direction: { type: String, default: `go` },
     enable: { type: Boolean, default: false },
   },
-  mounted () {
-  },
   methods: {
     // 取得站 Marker 的 Icon
     getStationIcon (station, index) {
@@ -99,17 +97,11 @@ export default {
           dataType: 'json',
           success: result => {
             this.data = result.data
-            this.init()
             resolve(this.simulateCurrent)
           },
           error: e => reject(e),
         })
       })
-    },
-    init () {
-    },
-    setForDemo () {
-      // if(this.routeId === `demo`)
     },
     // 向父組件傳遞模擬的 GPS 資訊
     sendSimulatePosition (position) {

@@ -145,7 +145,7 @@ export default {
       vm.setStyle()
     })
     vm.setCarousel()
-},
+  },
   methods: {
     // 切換主要站名語言
     toggleMainStationLang () {

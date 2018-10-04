@@ -2,7 +2,7 @@ const geolib = require('geolib')
 
 const options = {
   enableHighAccuracy: true,
-  timeout: 10000,
+  // timeout: 10000,
   maximumAge: 0
 }
 
@@ -12,9 +12,7 @@ const getPosition = () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const crd = pos.coords
       const result = crd
-
-      if(crd.accuracy > 80) reject(result)   // 當精確度過低時 忽略此次取得gps
-      else resolve(result)
+      resolve(result)
 
     }, (e) => {
       reject(e)
