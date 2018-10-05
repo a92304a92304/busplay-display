@@ -13,7 +13,6 @@ const getPosition = () => {
       const crd = pos.coords
       const result = crd
       resolve(result)
-
     }, (e) => {
       reject(e)
     }, options)

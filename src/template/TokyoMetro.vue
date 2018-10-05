@@ -83,7 +83,6 @@
     //- 載入中的等待畫面
     template(v-else)
       .logo-banner
-        //- img.logo(src='@/assets/img/logo-dark.svg')
         fa(icon='circle-notch' size='2x' spin)
 
   .marquee(v-if='isMarqueeShow')
@@ -257,6 +256,12 @@ export default {
       return (this.carousels[this.carousel - 1])
         ? this.carousels[this.carousel - 1].type
         : null
+    },
+    stopCarousel () {
+      if (this.carouselTimer !== null) {
+        clearInterval(this.carouselTimer)
+        this.carouselTimer = null
+      }
     },
   },
   computed: {

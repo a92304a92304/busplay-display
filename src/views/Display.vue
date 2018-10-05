@@ -44,8 +44,12 @@ main
         button.btn.btn-dark(@click='enterFullScreen()') 全屏
       br
       .btn-group.btn-group-sm
+        button.btn.btn-dark(@click='$refs.TokyoMetro.stopCarousel()' v-if='$refs.TokyoMetro.carouselTimer') #[fa(icon='stop')] carousel
+        button.btn.btn-dark(@click='$refs.TokyoMetro.setCarousel()' v-else) #[fa(icon='play')] carousel
+        button.btn.btn-dark(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
+      br
+      .btn-group.btn-group-sm
         button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleTransition()') #[fa(icon='exchange-alt')] main transition
-        button.btn.btn-secondary(@click='$refs.TokyoMetro.toggleCarousel()') #[fa(icon='exchange-alt')] carousel
       br
       button.btn.btn-sm.btn-warning(@click='initRoute()') reset route
   transition(name='left-bottom')
@@ -186,7 +190,6 @@ export default {
         destinationName: r.destinationName,
         color: r.themeColor,
         thisStop: r.stations[current].name,
-
       }
 
       // 放入要顯示的7個站
@@ -247,7 +250,6 @@ export default {
         const position = await gps.getPosition()
         const url = `https://busplay-server.herokuapp.com/display/weather?lat=${position.latitude}&lng=${position.longitude}`
         const weather = await $.get(url)
-        console.log(url)
         if(weather.success) this.clock.weather = weather.data
         this.weatherTimer = setTimeout(this.fetchWeather, 1000 * 60 * 10)
       })()

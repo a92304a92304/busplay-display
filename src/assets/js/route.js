@@ -124,21 +124,23 @@ const calcEstTime = (route) => {
   const nextDistance = current.nextMinDistance
 
   // 預估出各站距離下一站的到站時間 (若已經過則為0)
-  const timeList = stations.map((station, index) => {
+  const timeList = stations.map((station, index, array) => {
     let min = 0
     if (index === nextIndex) {  // 本站
       min = (nextDistance / meterPerMin)
     } else if (index === stations.length - 1) {   // 最終站
       min = 0
-    } else if (index >= nextIndex) {  // 其他下一站
-      min = (station.distance / meterPerMin)
+    } else if (index > nextIndex) {  // 其他下一站
+      min = (array[index - 1].distance / meterPerMin)
     }
     return min
   })
 
+  // console.log(JSON.stringify(timeList))
+
   // 將陣列內的值和前一個值相加
   timeList.forEach((time, index, list) => {
-    const prev = (index !== 0 ) ? list[index - 1] : 0
+    const prev = (index !== 0) ? list[index - 1] : 0
     list[index] = prev + time
   })
 
