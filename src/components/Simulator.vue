@@ -141,7 +141,7 @@ export default {
     // Google Maps 中心點
     googleMapsCenter () {
       const taipei = { lat: 25.0422377, lng: 121.5333034 }
-      
+
       if(!this.enable) return this.current // 若禁用模擬器則回傳 真實GPS位置
       else if (!this.data) return taipei  // 若尚未取得模擬點列表
       else if (this.sliderValue >= this.sliderMax) return taipei
