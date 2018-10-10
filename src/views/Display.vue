@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle' @click.stop='toggleDebugMode()')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :htmlFontSize='htmlFontSize' :debugMode='debugMode')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :qrCode='qrCode' :htmlFontSize='htmlFontSize' :debugMode='debugMode' )
 
   //- Debug 資訊
   //- 返回按鈕
@@ -61,6 +61,7 @@ main
 import $ from 'jquery'
 import screenfull from 'screenfull'
 import moment from 'moment'
+import qrcode from 'yaqrcode'
 
 import TokyoMetro from '@/template/TokyoMetro'
 import ScrollText from '@/components/ScrollText'
@@ -90,6 +91,7 @@ export default {
       weatherTimer: null,  // 儲存天氣timer的id
       clockTimer: null,
       carousels: [],
+      qrCode: null,
     }
   },
   components: {
@@ -104,14 +106,12 @@ export default {
     vm.fetchWeather()
     vm.setWindow()
 
-
     if (!vm.enableSimulator) {  // 若使用真實 gps
       (async () => {
         const position = await gps.getPosition()  // 取得初始位置
         await vm.fetchRoute(vm.routeId, vm.direction, position)  // 取得路線 data
         vm.startGps()
       })()
-
     } else {  // 若使用行車模擬器
       (async () => {
         const position = await vm.$refs.sim.fetch()
@@ -121,8 +121,14 @@ export default {
         vm.debugMode = 1
       })()
     }
+    vm.setQrCode()
   },
   methods: {
+    // 取得 QRCODE
+    setQrCode () {
+      this.qrCode = qrcode(location.href, {
+      })
+    },
     // 設定當前時間
     setTime () {
       const h = moment().format('HH')

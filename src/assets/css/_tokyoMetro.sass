@@ -100,7 +100,7 @@ h1, h2, h3, h4, h5, h6, span
 $main-station-font-size: 4rem
 
 .main-station
-  width: 80%
+  flex: 8
   +px(1rem)
   +py(.5rem)
   .box
@@ -120,14 +120,15 @@ $main-station-font-size: 4rem
       transform-origin: left
       display: inline-block
 
-.ticket-info
-  flex-grow: 1
+.qr-code
+  flex: 2
   width: auto
   font-size: 1.25rem
   font-weight: bold
   text-align: center
-  span
-    // +item-style
+  img
+    width: auto
+    height: 4rem
 
 .route
   height: 100%

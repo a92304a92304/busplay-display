@@ -22,8 +22,8 @@
           transition-group(:name='transitions[transition]')
             h1(:ref='`mainStationText${key}`', :key='key', :class='key', v-for='(stop, key) in data.thisStop' v-show='getAllLangs(data.thisStop)[mainStationLang] == key')
               span(:style='getMainStationTextStyle(key)') {{ stop }}
-      .ticket-info(hidden)
-        span #[fa(icon='arrow-up')] 上車收票
+      .qr-code
+        img(:src='qrCode')
 
     template(v-else)
 
@@ -127,6 +127,7 @@ export default {
     ratio: { type: Array, default: null },
     marquee: { type: Array, default: null },
     carousels: { type: Array, default: null },
+    qrCode: { type: String, default: null },
     htmlFontSize: { type: Number, default: 12 },
     debugMode: { type: Number, default: 0 }
   },

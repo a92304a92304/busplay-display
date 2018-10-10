@@ -30,7 +30,7 @@ import $ from 'jquery'
 import VueSlider from 'vue-slider-component'
 import simulator from '@/assets/js/simulator.js'
 
-const playSpeed = 200
+const playSpeed = 400
 
 export default {
   name: 'Simulator',
