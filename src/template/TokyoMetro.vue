@@ -1,7 +1,7 @@
 <template lang="pug">
 #tokyo-metro(ref='tokyoMetro')
   //- 上方區塊
-  #top(ref='top' :style='topStyle')
+  #top(ref='top' :style='topStyle' @click='toggleDebugMode')
     template(v-if='data')
       .bus-info
         .bus-name
@@ -28,7 +28,7 @@
     template(v-else)
 
   //- 下方區塊
-  #bottom
+  #bottom(@click='toggleCarousel()')
     template(v-if='data')
       .route(v-if='carousel === 0')
         .bar(:style='routeBarStyle')
@@ -264,6 +264,10 @@ export default {
         this.carouselTimer = null
       }
     },
+    toggleDebugMode () {
+      this.$emit('toggleDebugMode')
+    },
+
   },
   computed: {
     topStyle () {

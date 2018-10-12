@@ -1,7 +1,7 @@
 <template lang="pug">
 main
-  #display-area(:style='areaStyle' @click.stop='toggleDebugMode()')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :qrCode='qrCode' :htmlFontSize='htmlFontSize' :debugMode='debugMode' )
+  #display-area(:style='areaStyle')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :qrCode='qrCode' :htmlFontSize='htmlFontSize' :debugMode='debugMode' @toggleDebugMode='toggleDebugMode')
 
   //- Debug 資訊
   //- 返回按鈕
