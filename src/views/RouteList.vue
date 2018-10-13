@@ -6,7 +6,7 @@ section
   .loading(v-if='!routes') #[fa(icon='circle-notch' spin)]
   RouteListItem.fade-enter-active(v-for='(route, index) in routes' :route='route' :index='index' :key='index' :config='config')
 
-  h4.text-light.mt-5 演示路線
+  h4.text-light.mt-5(v-if='demoRoute') 演示路線
   RouteListItem.mb-5(:route='demoRoute' v-if='demoRoute' :config='config')
 </template>
 
@@ -30,7 +30,7 @@ export default {
     },
   },
   mounted () {
-    this.setDemoRoute()
+    // this.setDemoRoute()
     this.fetchList()
 
     $('html').css('font-size', `14px`)

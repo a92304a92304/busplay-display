@@ -21,7 +21,7 @@
         .box(ref='mainStationBox')
           transition-group(:name='transitions[transition]')
             h1(:ref='`mainStationText${key}`', :key='key', :class='key', v-for='(stop, key) in data.thisStop' v-show='getAllLangs(data.thisStop)[mainStationLang] == key')
-              span(:style='getMainStationTextStyle(key)') {{ stop }}
+              span(:style='getMainStationTextStyle(key, stop)') {{ stop }}
       .qr-code
         img(:src='qrCode')
 
@@ -86,7 +86,7 @@
         fa(icon='circle-notch' size='2x' spin)
 
   .marquee(v-if='isMarqueeShow')
-    ScrollText(ref='marquee' :htmlFontSize='htmlFontSize' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='true' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
+    ScrollText(ref='marquee' :htmlFontSize='htmlFontSize' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='false' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
 </template>
 
 <script>
@@ -165,13 +165,15 @@ export default {
       this.transition = ((this.transition + 1) + length) % length
     },
     // 取得主要站名 h1>span 的style
-    getMainStationTextStyle (lang) {
+    getMainStationTextStyle (lang, string) {
       const vm = this
       const textWidth = $(`#top .main-station .box h1.${lang}`).width()  // 文字實際寬度
       const boxWidth = $('#top .main-station .box').width()              // 框寬度
 
       const transformValue = (textWidth > boxWidth) ? boxWidth / textWidth : 1
-      return { transform: `scaleX(${transformValue})` }
+      let letterSpacing = (string.length === 2) ? `2rem` : null
+
+      return { transform: `scaleX(${transformValue})`, letterSpacing}
     },
     // 取得物件內所有語言。回傳 ['ch', 'en', ...]
     getAllLangs (obj) {

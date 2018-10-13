@@ -245,7 +245,7 @@ export default {
       return new Promise((resolve, reject) => {
         route.fetchRoute(id, direction, position).then(val => {
           this.route = val
-          this.marquee = val.marquee
+          this.marquee = val.marquee.map(val => val.content)
           resolve()
         })
       })
