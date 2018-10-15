@@ -82,8 +82,10 @@
           .item(v-for='(i, index) in carousels' :class='{ active: index === carousel - 1 }') {{ getCarouselBarText(i) }}
     //- 載入中的等待畫面
     template(v-else)
+      //- .logo-banner
+      //-   fa.text-success(icon='play' size='2x' @click='start')
       .logo-banner
-        fa(icon='circle-notch' size='2x' spin)
+        fa(icon='circle-notch' size='2x' spin @click='start')
 
   .marquee(v-if='isMarqueeShow')
     ScrollText(ref='marquee' :htmlFontSize='htmlFontSize' background-color='#1e1e1e' :marquee='true' :start-delay='0' :endDelay='10' :forceScroll='false' v-for='(i, index) in marquee' v-if='index === currMarquee' @end='marqueeEnd' :key='index') {{ i }}
@@ -269,7 +271,9 @@ export default {
     toggleDebugMode () {
       this.$emit('toggleDebugMode')
     },
-
+    start () {
+      this.$emit('start')
+    },
   },
   computed: {
     topStyle () {

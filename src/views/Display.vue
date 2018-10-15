@@ -1,7 +1,7 @@
 <template lang="pug">
 main
   #display-area(:style='areaStyle')
-    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :qrCode='qrCode' :htmlFontSize='htmlFontSize' :debugMode='debugMode' @toggleDebugMode='toggleDebugMode')
+    TokyoMetro(ref='TokyoMetro' :ratio='ratio' :data='data' :marquee='marquee' :carousels='carousels' :clock='clock' :qrCode='qrCode' :htmlFontSize='htmlFontSize' :debugMode='debugMode' @toggleDebugMode='toggleDebugMode' @start='start')
 
   //- Debug 資訊
   //- 返回按鈕
@@ -105,25 +105,29 @@ export default {
     vm.setTime()
     vm.fetchWeather()
     vm.setWindow()
-
-    if (!vm.enableSimulator) {  // 若使用真實 gps
-      (async () => {
-        const position = await gps.getPosition()  // 取得初始位置
-        await vm.fetchRoute(vm.routeId, vm.direction, position)  // 取得路線 data
-        vm.startGps()
-      })()
-    } else {  // 若使用行車模擬器
-      (async () => {
-        const position = await vm.$refs.sim.fetch()
-        vm.setSimulatePosition(position)
-        await vm.fetchRoute(vm.routeId, vm.direction, vm.position)
-        vm.setSimulatePosition(position)
-        vm.debugMode = 1
-      })()
-    }
     vm.setQrCode()
+    vm.start()
   },
   methods: {
+    start () {
+      const vm = this
+
+      if (!vm.enableSimulator) {  // 若使用真實 gps
+        (async () => {
+          const position = await gps.getPosition()  // 取得初始位置
+          await vm.fetchRoute(vm.routeId, vm.direction, position)  // 取得路線 data
+          vm.startGps()
+        })()
+      } else {  // 若使用行車模擬器
+        (async () => {
+          const position = await vm.$refs.sim.fetch()
+          vm.setSimulatePosition(position)
+          await vm.fetchRoute(vm.routeId, vm.direction, vm.position)
+          vm.setSimulatePosition(position)
+          vm.debugMode = 1
+        })()
+      }
+    },
     // 取得 QRCODE
     setQrCode () {
       this.qrCode = qrcode(location.href, {
